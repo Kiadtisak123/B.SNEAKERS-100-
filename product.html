@@ -7,6 +7,7 @@
 
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;600&display=swap" rel="stylesheet">
 
 <style>
   * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Kanit', sans-serif; }
@@ -25,7 +26,7 @@
   nav a { color: #fff; text-decoration: none; font-size: 15px; transition: 0.3s; }
   nav a:hover { color: #e60023; }
 
-  /* Dropdown ปรับปรุงให้รองรับหมวดหมู่ใหม่ */
+  /* Dropdown */
   .dropdown { position: relative; display: inline-block; }
   .dropdown-menu {
     position: absolute; top: 100%; left: 0;
@@ -34,13 +35,21 @@
     box-shadow: 0 10px 25px rgba(0,0,0,0.5); padding: 10px 0;
     z-index: 1001;
   }
-  .dropdown-menu a { display: block; padding: 10px 20px; color: #ccc; font-size: 14px; }
-  .dropdown-menu a:hover { background: #e60023; color: #fff; }
+  .dropdown-menu a { display: block; padding: 10px 20px; color: #ccc; font-size: 14px; transition: 0.2s; }
+  .dropdown-menu a:hover { background: #e60023; color: #fff; padding-left: 25px; }
   .dropdown:hover .dropdown-menu { display: block; }
 
   /* Cart Icon */
-  .cart-link { position: relative; display: flex; align-items: center; gap: 8px; background: #222; padding: 8px 15px; border-radius: 20px; cursor: pointer;}
-  .cart-count { background: #e60023; color: white; border-radius: 50%; padding: 2px 7px; font-size: 11px; position: absolute; top: -5px; right: -5px; border: 2px solid #111; }
+  .cart-link { 
+    position: relative; display: flex; align-items: center; gap: 8px; 
+    background: #222; padding: 8px 15px; border-radius: 20px; 
+    cursor: pointer; transition: 0.3s;
+  }
+  .cart-link:hover { background: #333; }
+  .cart-count { 
+    background: #e60023; color: white; border-radius: 50%; padding: 2px 7px; 
+    font-size: 11px; position: absolute; top: -5px; right: -5px; border: 2px solid #111; 
+  }
 
   /* ===== CONTENT ===== */
   .container { max-width: 1200px; margin: auto; padding: 40px 20px; }
@@ -62,7 +71,7 @@
   .card-body { padding: 20px; flex-grow: 1; display: flex; flex-direction: column; }
   .card-body h3 { font-size: 18px; margin-bottom: 5px; color: #fff; height: 45px; overflow: hidden; }
   .price { color: #e60023; font-size: 22px; font-weight: bold; margin-bottom: 15px; }
-  .size-tag { color: #888; font-size: 12px; margin-bottom: 10px; }
+  .size-tag { color: #888; font-size: 13px; margin-bottom: 10px; }
 
   .btn-group { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
   .btn {
@@ -75,7 +84,12 @@
   .btn-buy:hover { background: #ff1a3d; }
   .btn-cart:hover { background: #444; }
 
-  .sold-out-overlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); color: white; display: flex; align-items: center; justify-content: center; font-size: 20px; font-weight: bold; z-index: 2; pointer-events: none; }
+  .sold-out-overlay { 
+    position: absolute; top: 0; left: 0; width: 100%; height: 100%; 
+    background: rgba(0,0,0,0.75); color: white; display: flex; 
+    align-items: center; justify-content: center; font-size: 20px; 
+    font-weight: bold; z-index: 2; pointer-events: none; 
+  }
 
   footer { background: #111; text-align: center; padding: 40px; border-top: 2px solid #e60023; margin-top: 60px; color: #666; }
 
@@ -86,23 +100,24 @@
     border-radius: 50%; text-decoration: none;
     box-shadow: 0 10px 25px rgba(0,0,0,0.4); z-index: 999; transition: 0.3s;
   }
+  .messenger-float:hover { transform: scale(1.1); background: #0073e6; }
 </style>
 </head>
 
 <body>
 
 <header>
-  <a href="Homepage.html" class="logo">B.<span>SNEAKERS</span></a>
+  <a href="index.html" class="logo">B.<span>SNEAKERS</span></a>
 
   <nav>
-    <a href="Homepage.html">หน้าแรก</a>
+    <a href="index.html">หน้าแรก</a>
 
     <div class="dropdown">
       <a href="#" style="color: #e60023;">สินค้า <i class="fa-solid fa-chevron-down" style="font-size: 10px;"></i></a>
       <div class="dropdown-menu">
         <a href="product.html">สินค้าทั้งหมด</a>
         <a href="Air Force.html">Air Force</a>
-        <a href="Air Jordan .html">Air Jordan 1 Low</a>
+        <a href="Air Jordan 1 low .html">Air Jordan 1 Low</a>
         <a href="Air Jordan 1 Mid.html">Air Jordan 1 Mid</a>
         <a href="Nike Dunk Low.html">Nike Dunk Low</a>
       </div>
@@ -118,25 +133,28 @@
 </header>
 
 <div class="container">
-  <h1>สินค้าทั้งหมด</h1>
+  <h1>สินค้าทั้งหมดในร้าน</h1>
   <div class="grid" id="productGrid">
       </div>
 </div>
 
-<footer>© 2026 B.Sneakers - Trusted Sneaker Shop</footer>
+<footer>© 2026 B.Sneakers - ร้านรองเท้าที่คุณไว้วางใจ</footer>
 
 <a href="https://m.me/102799091274255" target="_blank" class="messenger-float">
   <i class="fa-brands fa-facebook-messenger"></i>
 </a>
 
 <script>
-// --- 1. โหลดและแสดงสินค้าทั้งหมด (ไม่มีการ Filter) ---
+// --- 1. โหลดและแสดงสินค้าทั้งหมด ---
 function renderAllProducts() {
     const grid = document.getElementById("productGrid");
     const products = JSON.parse(localStorage.getItem('sneaker_prods')) || [];
 
     if (products.length === 0) {
-        grid.innerHTML = `<div style="grid-column:1/-1; text-align:center; padding:50px; color:#666;">ยังไม่มีสินค้าในระบบ</div>`;
+        grid.innerHTML = `<div style="grid-column:1/-1; text-align:center; padding:100px 0; color:#555;">
+            <i class="fa-solid fa-box-open" style="font-size: 50px; margin-bottom: 20px;"></i>
+            <p>ขออภัย ขณะนี้ยังไม่มีสินค้าในระบบ</p>
+        </div>`;
         return;
     }
 
@@ -152,7 +170,7 @@ function renderAllProducts() {
             </div>
             <div class="card-body">
                 <h3>${p.name}</h3>
-                <div class="size-tag">Size: ${p.sizes || 'N/A'}</div>
+                <div class="size-tag">ไซส์ที่มี: ${p.sizes || 'N/A'}</div>
                 <div class="price">฿${Number(p.price).toLocaleString()}</div>
                 <div class="btn-group">
                     <button class="btn btn-buy" onclick="buyNow(event, '${p.id}')">ซื้อเลย</button>
@@ -186,13 +204,20 @@ function buyNow(e, id) {
             name: p.name,
             price: p.price,
             qty: 1,
-            size: p.sizes ? p.sizes.split(',')[0].trim() : 'N/A',
+            size: p.sizes ? p.sizes.split(',')[0].trim() : (p.size || 'N/A'),
             img: (p.images && p.images.length > 0) ? p.images[0] : p.img
         }];
         localStorage.setItem("checkoutItems", JSON.stringify(checkoutItem));
         window.location.href = "checkout.html";
     } else {
-        Swal.fire({ icon: 'error', title: 'สินค้าหมด', background: '#1a1a1a', color: '#fff' });
+        Swal.fire({ 
+            icon: 'error', 
+            title: 'สินค้าหมด', 
+            text: 'ขออภัยครับ สินค้ารายการนี้หมดชั่วคราว',
+            background: '#1a1a1a', 
+            color: '#fff',
+            confirmButtonColor: '#e60023'
+        });
     }
 }
 
@@ -213,7 +238,7 @@ function addToCart(e, id) {
             id: p.id,
             name: p.name,
             price: p.price,
-            size: p.sizes ? p.sizes.split(',')[0].trim() : 'N/A',
+            size: p.sizes ? p.sizes.split(',')[0].trim() : (p.size || 'N/A'),
             img: (p.images && p.images.length > 0) ? p.images[0] : p.img,
             qty: 1
         });
@@ -223,7 +248,8 @@ function addToCart(e, id) {
     updateCartCount();
     Swal.fire({
         toast: true, position: 'top-end', icon: 'success',
-        title: 'เพิ่มลงตะกร้าแล้ว', showConfirmButton: false, timer: 1500
+        title: 'เพิ่มลงตะกร้าแล้ว', showConfirmButton: false, timer: 1500,
+        background: '#1a1a1a', color: '#fff'
     });
 }
 

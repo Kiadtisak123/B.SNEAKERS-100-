@@ -9,8 +9,8 @@
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
 <style>
-/* --- CSS คงเดิมตามที่คุณออกแบบไว้ --- */
-*{margin:0;padding:0;box-sizing:border-box;font-family:'Segoe UI', 'Kanit', sans-serif}
+/* --- CSS คงเดิมเพื่อความพรีเมียมตามที่คุณออกแบบไว้ --- */
+*{margin:0;padding:0;box-sizing:border-box;font-family:'Kanit', sans-serif}
 body{background:#0f0f0f;color:#fff}
 header{ display:flex;justify-content:space-between;align-items:center; background:#111;padding:15px 30px;border-bottom:2px solid #e60023; position: sticky; top: 0; z-index: 1000; }
 .logo{color:#e60023;font-size:24px;font-weight:bold; letter-spacing: 1px; text-decoration:none;}
@@ -58,10 +58,10 @@ footer{ margin-top:60px;background:#111;text-align:center; padding:40px;border-t
 <body>
 
 <header>
-  <a href="homepage.html" class="logo">B.<span>SNEAKERS</span></a>
+  <a href="index.html" class="logo">B.<span>SNEAKERS</span></a>
   <nav>
-    <a href="homepage.html">หน้าแรก</a>
-    <a href="homepage.html#shop">สินค้า</a>
+    <a href="index.html">หน้าแรก</a>
+    <a href="product.html">สินค้า</a>
     <a href="ตระกร้า.html" class="cart-nav">
       <i class="fa-solid fa-cart-shopping"></i> ตะกร้า
       <span id="cartCount">0</span>
@@ -95,7 +95,7 @@ footer{ margin-top:60px;background:#111;text-align:center; padding:40px;border-t
 
     <div class="action-btns" id="buySection"></div>
     
-    <a href="https://m.me/YOUR_PAGE_ID" target="_blank" style="text-decoration:none">
+    <a href="https://m.me/102799091274255" target="_blank" style="text-decoration:none">
       <button class="btn btn-messenger">
         <i class="fa-brands fa-facebook-messenger"></i> สอบถามสถานะสินค้าทาง Messenger
       </button>
@@ -108,13 +108,14 @@ footer{ margin-top:60px;background:#111;text-align:center; padding:40px;border-t
 </footer>
 
 <script>
-// --- 1. เตรียมข้อมูลสินค้า ---
+// --- การดึงข้อมูลและจัดการสถานะยังคงเข้มข้นเหมือนเดิม ---
 const product = JSON.parse(localStorage.getItem("selectedProduct"));
 const allProducts = JSON.parse(localStorage.getItem('sneaker_prods')) || [];
 const realTimeProduct = allProducts.find(p => String(p.id) === String(product?.id)) || product;
 
+// แก้ไขจุดที่ 3: ถ้าไม่มีข้อมูลให้เด้งกลับ index.html
 if (!realTimeProduct) {
-    window.location.href = "homepage.html";
+    window.location.href = "index.html";
 }
 
 let productImages = [];
@@ -127,7 +128,6 @@ if (productImages.length === 0 && (realTimeProduct.img || realTimeProduct.image)
 
 let currentIndex = 0;
 
-// --- 2. ตรวจสอบสถานะการเข้าสู่ระบบ (หัวใจสำคัญ) ---
 function checkLogin() {
     const user = JSON.parse(localStorage.getItem("currentUser"));
     if (!user) {
@@ -208,21 +208,14 @@ function updateCartBadge() {
     document.getElementById('cartCount').textContent = total;
 }
 
-// เพิ่มลงตะกร้าแบบเช็คล็อกอิน
 function addToCart() {
-    if (!checkLogin()) return; // ถ้าไม่ล็อกอิน ให้หยุดทำงานทันที
+    if (!checkLogin()) return;
 
     let cart = JSON.parse(localStorage.getItem("cart")) || [];
     let found = cart.find(item => String(item.id) === String(realTimeProduct.id));
     
     if (found && found.qty >= Number(realTimeProduct.stock)) {
-        Swal.fire({
-            icon: 'error',
-            title: 'สินค้าไม่เพียงพอ',
-            text: 'คุณเลือกสินค้าเกินจำนวนในสต็อกที่มีอยู่',
-            background: '#1a1a1a',
-            color: '#fff'
-        });
+        Swal.fire({ icon: 'error', title: 'สินค้าไม่เพียงพอ', background: '#1a1a1a', color: '#fff' });
         return;
     }
 
@@ -241,19 +234,11 @@ function addToCart() {
     
     localStorage.setItem("cart", JSON.stringify(cart));
     updateCartBadge();
-
-    Swal.fire({
-        title: 'เพิ่มลงตะกร้าแล้ว!',
-        icon: 'success',
-        confirmButtonColor: '#e60023',
-        background: '#1a1a1a',
-        color: '#fff'
-    });
+    Swal.fire({ title: 'เพิ่มลงตะกร้าแล้ว!', icon: 'success', confirmButtonColor: '#e60023', background: '#1a1a1a', color: '#fff' });
 }
 
-// ซื้อเลยแบบเช็คล็อกอิน
 function buyNow() {
-    if (!checkLogin()) return; // ถ้าไม่ล็อกอิน ให้หยุดทำงานทันที
+    if (!checkLogin()) return;
 
     if (Number(realTimeProduct.stock) > 0) {
         const checkoutItem = [{

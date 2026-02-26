@@ -9,6 +9,7 @@
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
   <style>
+    /* --- CSS คงเดิมเพื่อความสวยงาม --- */
     * { margin:0; padding:0; box-sizing:border-box; font-family: 'Kanit', sans-serif; }
     body { background:#0f0f0f; color:#fff; }
 
@@ -23,7 +24,6 @@
     nav a { color:#fff; text-decoration:none; font-size: 14px; transition: 0.3s; }
     nav a:hover { color:#e60023; }
 
-    /* Dropdown */
     .dropdown { position: relative; display: inline-block; }
     .dropdown-menu {
       position: absolute; top: 100%; left: 0;
@@ -87,9 +87,9 @@
 <body>
 
 <header>
-  <a href="Homepage.html" class="logo">B.<span>SNEAKERS</span></a>
+  <a href="index.html" class="logo">B.<span>SNEAKERS</span></a>
   <nav>
-    <a href="Homepage.html">หน้าแรก</a>
+    <a href="index.html">หน้าแรก</a>
     <div class="dropdown">
       <a href="#" style="color: #e60023;">สินค้า <i class="fa-solid fa-chevron-down" style="font-size: 10px;"></i></a>
       <div class="dropdown-menu">
@@ -117,12 +117,11 @@
 <footer>© 2026 B.Sneakers - Trusted Sneaker Shop</footer>
 
 <script>
-// --- 1. กรองและแสดงสินค้าเฉพาะ Jordan Low ---
+// --- ส่วนการทำงาน JavaScript ยังคงเดิม ---
 function renderJordanLow() {
     const grid = document.getElementById("jordanGrid");
     const allProducts = JSON.parse(localStorage.getItem('sneaker_prods')) || [];
 
-    // กรองสินค้าที่มีคำว่า "Jordan" และ "Low"
     const jordanLowList = allProducts.filter(p => 
         p.name.toLowerCase().includes('jordan') && 
         p.name.toLowerCase().includes('low')
@@ -154,7 +153,6 @@ function renderJordanLow() {
     }).join('');
 }
 
-// --- 2. ฟังก์ชันจัดการระบบ (เหมือนหน้าอื่นๆ) ---
 function viewDetail(id) {
     const products = JSON.parse(localStorage.getItem('sneaker_prods')) || [];
     const p = products.find(item => String(item.id) === String(id));

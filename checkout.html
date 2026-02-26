@@ -9,8 +9,8 @@
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
 <style>
-  /* --- Style เดิมที่คุณออกแบบไว้ --- */
-  body { background:#0f0f0f; color:#fff; font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; margin:0; padding-bottom: 50px; }
+  /* --- Style เดิมที่คุณออกแบบไว้ คงความพรีเมียม --- */
+  body { background:#0f0f0f; color:#fff; font-family:'Kanit', sans-serif; margin:0; padding-bottom: 50px; }
   .container { max-width: 650px; margin: 40px auto; padding: 0 20px; }
   .card { background:#1a1a1a; padding:30px; border-radius:24px; border:1px solid #222; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
   h1 { font-size: 28px; margin-bottom: 25px; display: flex; align-items: center; gap: 10px; color: #e60023; }
@@ -92,16 +92,24 @@
 const SHIPPING = 100;
 const COD_EXTRA = 200;
 
-// ดึงรายการที่ลูกค้าเลือกมาจากหน้าตะกร้า
-const fullCart = JSON.parse(localStorage.getItem("cart")) || [];
-const cart = fullCart.filter(item => item.selected !== false);
+// ดึงรายการสินค้า
+let fullCart = JSON.parse(localStorage.getItem("cart")) || [];
+let cart = fullCart.filter(item => item.selected !== false);
+
+// ถ้าไม่มีสินค้าให้เด้งกลับหน้าสินค้า
+if (cart.length === 0) {
+    Swal.fire({
+        title: 'ไม่มีสินค้าในตะกร้า',
+        text: 'กรุณาเลือกสินค้าก่อนชำระเงิน',
+        icon: 'warning',
+        confirmButtonColor: '#e60023'
+    }).then(() => {
+        window.location.href = 'product.html';
+    });
+}
 
 function renderSummary() {
   const container = document.getElementById("orderItems");
-  if(cart.length === 0) {
-    container.innerHTML = "<div style='text-align:center;color:#888;'>ไม่มีสินค้าที่เลือกชำระเงิน</div>";
-    return;
-  }
   let html = "";
   cart.forEach(item => {
     html += `<div class="item-row">
@@ -147,7 +155,7 @@ function confirmOrder(){
 
   Swal.fire({
     title: 'ยืนยันการสั่งซื้อ?',
-    text: "เมื่อยืนยัน ระบบจะส่งรายการเข้าสู่แชท Messenger",
+    text: "เมื่อยืนยัน ระบบจะส่งรายการเข้าสู่แชท Messenger เพื่อยืนยันหลักฐาน",
     icon: 'question',
     showCancelButton: true,
     confirmButtonColor: '#e60023',
@@ -158,17 +166,17 @@ function confirmOrder(){
   }).then((result) => {
     if (result.isConfirmed) {
       
-      // 1. ตัดสต็อกสินค้า (Database Sync)
+      // 1. ตัดสต็อกสินค้า
       let products = JSON.parse(localStorage.getItem("sneaker_prods")) || [];
       cart.forEach(cartItem => {
-          let pIndex = products.findIndex(p => p.id == cartItem.id);
+          let pIndex = products.findIndex(p => String(p.id) === String(cartItem.id));
           if(pIndex !== -1) {
               products[pIndex].stock = Math.max(0, products[pIndex].stock - cartItem.qty);
           }
       });
       localStorage.setItem("sneaker_prods", JSON.stringify(products));
 
-      // 2. บันทึกประวัติการสั่งซื้อลงระบบ (เพื่อให้หน้า Admin และ หน้า Order แสดงผล)
+      // 2. บันทึกประวัติการสั่งซื้อ
       let orders = JSON.parse(localStorage.getItem("orders")) || [];
       const orderData = {
         orderID,
@@ -177,34 +185,37 @@ function confirmOrder(){
         name, tel, address, method, 
         items: cart,
         total: parseInt(totalText.replace(/,/g,"")),
-        status: 'pending', // สถานะเริ่มต้น: รอตรวจสอบ
-        isRead: false      // แจ้งเตือนใหม่
+        status: 'pending',
+        isRead: false
       };
       orders.push(orderData);
       localStorage.setItem("orders", JSON.stringify(orders));
 
-      // 3. ล้างสินค้าที่ซื้อแล้วออกจากตะกร้า
+      // 3. ล้างสินค้าที่ชำระเงินแล้วออกจากตะกร้า
       const remainingCart = fullCart.filter(item => item.selected === false);
       localStorage.setItem("cart", JSON.stringify(remainingCart));
 
-      // 4. ส่งข้อความไป Messenger
+      // 4. เตรียมข้อความส่ง Messenger
       let itemsText = "";
-      cart.forEach(item => itemsText += `- ${item.name} (${item.size || item.sizes}) x${item.qty}\n`);
+      cart.forEach(item => itemsText += `- ${item.name} (ไซส์ ${item.size || 'N/A'}) x${item.qty}\n`);
       
-      const message = `🛍️ **คำสั่งซื้อ: ${orderID}**\n\n` +
-                      `👤 ชื่อผู้รับ: ${name} (${tel})\n` +
+      const message = `🛍️ **คำสั่งซื้อใหม่: ${orderID}**\n\n` +
+                      `👤 ชื่อผู้รับ: ${name}\n` +
+                      `📞 เบอร์โทร: ${tel}\n` +
                       `📍 ที่อยู่: ${address}\n` +
-                      `📦 รายการ: \n${itemsText}\n` +
-                      `💳 วิธีชำระ: ${method === 'transfer' ? 'โอนเงิน' : 'เก็บเงินปลายทาง'}\n` +
+                      `📦 รายการสินค้า: \n${itemsText}\n` +
+                      `💳 วิธีชำระ: ${method === 'transfer' ? 'โอนเงิน (พร้อมเพย์/กสิกร)' : 'เก็บเงินปลายทาง'}\n` +
                       `💰 ยอดสุทธิ: ${totalText} บาท\n\n` +
-                      (method === 'transfer' ? '✅ โอนเงินเรียบร้อยแล้ว' : '✅ รอยืนยันส่งแบบปลายทาง');
+                      (method === 'transfer' ? '⚠️ รบกวนส่งสลิปโอนเงินที่นี่เพื่อยืนยัน' : '✅ รอยืนยันการจัดส่งแบบปลายทาง');
 
       const fbPageID = "102799091274255"; 
+      // ส่งไปที่หน้า Messenger ของเพจ
       window.location.href = `https://m.me/${fbPageID}?text=${encodeURIComponent(message)}`;
     }
   });
 }
 
+// เริ่มต้นทำงาน
 renderSummary();
 updateTotal();
 toggleQR();

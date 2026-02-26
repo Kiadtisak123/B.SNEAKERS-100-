@@ -25,7 +25,6 @@
     nav a { color: #fff; text-decoration: none; font-size: 15px; transition: 0.3s; }
     nav a:hover { color: #e60023; }
 
-    /* Dropdown Style เพื่อความสม่ำเสมอทุกหน้า */
     .dropdown { position: relative; display: inline-block; }
     .dropdown-menu {
       position: absolute; top: 100%; left: 0;
@@ -82,9 +81,9 @@
 <body>
 
 <header>
-  <a href="Homepage.html" class="logo">B.<span>SNEAKERS</span></a>
+  <a href="index.html" class="logo">B.<span>SNEAKERS</span></a>
   <nav>
-    <a href="Homepage.html">หน้าแรก</a>
+    <a href="index.html">หน้าแรก</a>
     
     <div class="dropdown">
       <a href="#" style="color: #e60023;">สินค้า <i class="fa-solid fa-chevron-down" style="font-size: 10px;"></i></a>
@@ -116,12 +115,11 @@
 <footer>© 2026 B.Sneakers - Trusted Sneaker Shop</footer>
 
 <script>
-// --- 1. กรองและแสดงสินค้าเฉพาะตระกูล Air Force ---
+// --- ฟังก์ชัน JavaScript เดิมเพื่อรักษาการทำงานของระบบ ---
 function renderAirForce() {
     const grid = document.getElementById("airForceGrid");
     const allProducts = JSON.parse(localStorage.getItem('sneaker_prods')) || [];
 
-    // กรองเฉพาะสินค้าที่มีคำว่า "Air Force" อยู่ในชื่อ
     const airForceList = allProducts.filter(p => 
         p.name.toLowerCase().includes('air force')
     );
@@ -156,7 +154,6 @@ function renderAirForce() {
     }).join('');
 }
 
-// --- 2. ฟังก์ชันจัดการการคลิก ---
 function viewDetail(id) {
     const products = JSON.parse(localStorage.getItem('sneaker_prods')) || [];
     const p = products.find(item => String(item.id) === String(id));

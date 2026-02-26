@@ -10,15 +10,15 @@
   <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;600&display=swap" rel="stylesheet">
 
   <style>
-    /* CSS ส่วนเดิม */
     * { margin:0; padding:0; box-sizing:border-box; font-family:'Kanit', sans-serif; }
     body { background:#0f0f0f; color:#fff; padding-bottom: 120px; min-height: 100vh; }
     
-    /* ปรับปรุงส่วนหัวให้มีปุ่มย้อนกลับ */
     .container { max-width:800px; margin:20px auto; padding:20px; }
     .header-box { display: flex; align-items: center; justify-content: space-between; margin-bottom: 25px; }
-    .btn-back { background: #222; color: #fff; border: none; padding: 10px 15px; border-radius: 12px; cursor: pointer; text-decoration: none; font-size: 14px; transition: 0.3s; }
-    .btn-back:hover { background: #333; }
+    
+    /* ปุ่มย้อนกลับไปหน้า index.html ใหม่ */
+    .btn-back { background: #1a1a1a; color: #fff; border: 1px solid #333; padding: 10px 18px; border-radius: 12px; cursor: pointer; text-decoration: none; font-size: 14px; transition: 0.3s; }
+    .btn-back:hover { border-color: #e60023; color: #e60023; }
     
     h1 { display: flex; align-items: center; gap: 12px; font-size: 24px; color: #fff; margin: 0; }
     h1 i { color: #e60023; }
@@ -26,25 +26,32 @@
     .cart-item { 
         display:flex; align-items:center; background:#1a1a1a; padding:15px; 
         border-radius:20px; margin-bottom:15px; border:1px solid #222; gap:12px; 
+        transition: 0.3s;
     }
+    .cart-item:hover { border-color: #333; }
+    
     .cart-left { display:flex; align-items:center; gap:15px; flex: 1; }
-    .cart-left img { width:80px; height: 80px; border-radius:12px; object-fit: cover; background: #000; border: 1px solid #333; }
-    .item-info div { font-weight: bold; font-size: 16px; color: #eee; }
-    .item-info .item-size { color: #e60023; font-size: 12px; background: rgba(230,0,35,0.1); padding: 2px 8px; border-radius: 5px; }
-    .item-price { display: block; margin-top: 5px; font-size: 17px; color: #fff; font-weight: 600; }
+    .cart-left img { width:80px; height: 80px; border-radius:15px; object-fit: cover; background: #000; border: 1px solid #333; }
     
-    .qty-box { display:flex; align-items:center; gap:12px; background: #000; padding: 6px 12px; border-radius: 12px; border: 1px solid #333; }
-    .qty-box button { background:transparent; border:none; color:#e60023; width: 28px; cursor:pointer; font-size: 18px; }
-    .remove-btn { background:rgba(255,255,255,0.05); border:none; color:#555; width: 35px; height: 35px; border-radius:10px; cursor:pointer; }
+    .item-info div { font-weight: bold; font-size: 16px; color: #eee; margin-bottom: 4px; }
+    .item-info .item-size { color: #e60023; font-size: 12px; background: rgba(230,0,35,0.1); padding: 2px 10px; border-radius: 20px; border: 1px solid rgba(230,0,35,0.2); }
+    .item-price { display: block; margin-top: 8px; font-size: 17px; color: #fff; font-weight: 600; }
     
-    /* Bottom Bar */
-    .bottom-bar { position: fixed; bottom: 0; left: 0; right: 0; background: #111; padding: 20px; border-top: 2px solid #e60023; display: flex; justify-content: center; z-index: 1000; }
+    .qty-box { display:flex; align-items:center; gap:15px; background: #000; padding: 8px 15px; border-radius: 12px; border: 1px solid #333; }
+    .qty-box button { background:transparent; border:none; color:#e60023; cursor:pointer; font-size: 20px; font-weight: bold; }
+    .remove-btn { background:rgba(255,255,255,0.05); border:none; color:#555; width: 40px; height: 40px; border-radius:12px; cursor:pointer; transition: 0.3s; }
+    .remove-btn:hover { color: #e60023; background: rgba(230,0,35,0.1); }
+    
+    /* Bottom Bar - แถบสรุปยอด */
+    .bottom-bar { position: fixed; bottom: 0; left: 0; right: 0; background: rgba(17, 17, 17, 0.95); backdrop-filter: blur(10px); padding: 20px; border-top: 2px solid #e60023; display: flex; justify-content: center; z-index: 1000; }
     .bottom-content { max-width: 800px; width: 100%; display: flex; justify-content: space-between; align-items: center; }
-    .total-info .amount { font-size: 24px; font-weight: bold; color: #e60023; display: block; }
-    .btn-checkout { background: #e60023; color: #fff; padding: 12px 25px; border: none; border-radius: 12px; cursor: pointer; font-weight: bold; }
+    .total-info .amount { font-size: 26px; font-weight: bold; color: #e60023; display: block; }
+    
+    .btn-checkout { background: #e60023; color: #fff; padding: 14px 35px; border: none; border-radius: 15px; cursor: pointer; font-weight: bold; font-size: 16px; transition: 0.3s; box-shadow: 0 4px 15px rgba(230, 0, 35, 0.3); }
+    .btn-checkout:hover { background: #ff1a3d; transform: scale(1.05); }
     
     .empty-cart { text-align:center; padding: 100px 20px; color: #666; }
-    .btn-shop { display: inline-block; margin-top: 20px; background: #e60023; color: #fff; text-decoration: none; padding: 12px 30px; border-radius: 12px; font-weight: bold; }
+    .btn-shop { display: inline-block; margin-top: 20px; background: #e60023; color: #fff; text-decoration: none; padding: 12px 35px; border-radius: 12px; font-weight: bold; transition: 0.3s; }
   </style>
 </head>
 
@@ -52,8 +59,8 @@
 
 <div class="container">
   <div class="header-box">
-    <h1><i class="fa-solid fa-cart-shopping"></i> ตะกร้าของฉัน</h1>
-    <a href="product.html" class="btn-back"><i class="fa-solid fa-chevron-left"></i> เลือกสินค้าเพิ่ม</a>
+    <h1><i class="fa-solid fa-bag-shopping"></i> ตะกร้าของฉัน</h1>
+    <a href="index.html" class="btn-back"><i class="fa-solid fa-chevron-left"></i> เลือกสินค้าเพิ่ม</a>
   </div>
   
   <div id="cartItems"></div>
@@ -62,11 +69,11 @@
 <div class="bottom-bar" id="bottomBar">
   <div class="bottom-content">
     <div class="total-info">
-      <span style="color:#888; font-size:14px;">ยอดชำระสุทธิ</span>
+      <span style="color:#888; font-size:14px; letter-spacing: 1px;">ยอดชำระสุทธิ</span>
       <span class="amount" id="totalAmount">฿0</span>
     </div>
     <div class="actions">
-      <button class="btn-checkout" onclick="checkout()">ซื้อสินค้า <i class="fa-solid fa-chevron-right"></i></button>
+      <button class="btn-checkout" onclick="checkout()">ชำระเงิน <i class="fa-solid fa-arrow-right" style="margin-left:8px;"></i></button>
     </div>
   </div>
 </div>
@@ -75,6 +82,7 @@
 let cart = [];
 
 function initCart() {
+  // ดึงข้อมูลตะกร้าจาก LocalStorage
   cart = JSON.parse(localStorage.getItem('cart')) || [];
   renderCart();
 }
@@ -90,9 +98,9 @@ function renderCart() {
   if (cart.length === 0) {
     box.innerHTML = `
       <div class="empty-cart">
-        <i class="fa-solid fa-bag-shopping" style="font-size:60px; margin-bottom:15px; color:#222;"></i>
-        <p>ไม่มีสินค้าในตะกร้า</p>
-        <a href="product.html" class="btn-shop">ไปเลือกซื้อสินค้า</a>
+        <i class="fa-solid fa-cart-flatbed" style="font-size:80px; margin-bottom:20px; color:#1a1a1a;"></i>
+        <p style="font-size:18px;">ตะกร้าของคุณยังว่างเปล่า</p>
+        <a href="index.html" class="btn-shop">เริ่มช้อปปิ้งเลย</a>
       </div>`;
     bottomBar.style.display = 'none';
     return;
@@ -101,28 +109,39 @@ function renderCart() {
   bottomBar.style.display = 'flex';
 
   cart.forEach((item, index) => {
-    if (item.selected !== false) total += (Number(item.price) * Number(item.qty));
+    // คำนวณราคารวมเฉพาะชิ้นที่ถูกเลือก
+    if (item.selected !== false) {
+        total += (Number(item.price) * Number(item.qty));
+    }
 
     let imgShow = item.img || (item.images && item.images[0]) || 'https://via.placeholder.com/100';
 
     const div = document.createElement('div');
     div.className = 'cart-item';
+    // ปรับสไตล์สี checkbox ให้เข้ากับร้าน
     div.innerHTML = `
-      <input type="checkbox" style="width:20px; height:20px; accent-color:#e60023;" ${item.selected !== false ? "checked" : ""} onchange="toggleSelect(${index}, this.checked)">
+      <input type="checkbox" style="width:22px; height:22px; accent-color:#e60023; cursor:pointer;" 
+        ${item.selected !== false ? "checked" : ""} 
+        onchange="toggleSelect(${index}, this.checked)">
+      
       <div class="cart-left">
         <img src="${imgShow}" onerror="this.src='https://via.placeholder.com/100'">
         <div class="item-info">
           <div>${item.name}</div>
-          <span class="item-size">Size: ${item.size || 'N/A'}</span>
+          <span class="item-size">ไซส์: ${item.size || 'มาตรฐาน'}</span>
           <span class="item-price">฿${Number(item.price).toLocaleString()}</span>
         </div>
       </div>
+
       <div class="qty-box">
         <button onclick="changeQty(${index}, -1)">−</button>
-        <span>${item.qty}</span>
+        <span style="font-weight:600; width:20px; text-align:center;">${item.qty}</span>
         <button onclick="changeQty(${index}, 1)">+</button>
       </div>
-      <button class="remove-btn" onclick="removeItem(${index})"><i class="fa-solid fa-trash-can"></i></button>
+
+      <button class="remove-btn" onclick="removeItem(${index})">
+        <i class="fa-solid fa-trash-can"></i>
+      </button>
     `;
     box.appendChild(div);
   });
@@ -146,16 +165,44 @@ function changeQty(i, n) {
 }
 
 function removeItem(i) {
-  cart.splice(i, 1);
-  renderCart();
+  Swal.fire({
+    title: 'ยืนยันการลบ?',
+    text: "คุณต้องการลบสินค้านี้ออกจากตะกร้าใช่หรือไม่",
+    icon: 'question',
+    showCancelButton: true,
+    confirmButtonColor: '#e60023',
+    cancelButtonColor: '#222',
+    confirmButtonText: 'ลบเลย',
+    cancelButtonText: 'ยกเลิก',
+    background: '#1a1a1a',
+    color: '#fff'
+  }).then((result) => {
+    if (result.isConfirmed) {
+      cart.splice(i, 1);
+      renderCart();
+    }
+  });
 }
 
 function checkout() {
   const selectedItems = cart.filter(item => item.selected !== false);
+  
   if (selectedItems.length === 0) {
-    Swal.fire({ title: 'กรุณาเลือกสินค้า', icon: 'warning', background: '#1a1a1a', color: '#fff' });
+    Swal.fire({ 
+        title: 'ยังไม่มีสินค้าที่เลือก', 
+        text: 'กรุณาเลือกสินค้าอย่างน้อย 1 ชิ้นเพื่อชำระเงิน',
+        icon: 'warning', 
+        background: '#1a1a1a', 
+        color: '#fff',
+        confirmButtonColor: '#e60023'
+    });
     return;
   }
+
+  // เก็บเฉพาะชิ้นที่เลือกไว้ใน Session/LocalStorage เพื่อไปหน้ายืนยัน
+  localStorage.setItem('checkout_items', JSON.stringify(selectedItems));
+  
+  // ลิงก์ไปยังหน้ายืนยันการสั่งซื้อและโอนเงิน
   window.location.href = 'checkout.html';
 }
 

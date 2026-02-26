@@ -7,14 +7,14 @@
 
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+<link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;600&display=swap" rel="stylesheet">
 
 <style>
-  /* CSS เดิมของคุณ (คงไว้เพื่อความสวยงาม) */
-  * { margin: 0; padding: 0; box-sizing: border-box; }
+  /* ปรับปรุง CSS ให้เข้ากับหน้าอื่นๆ */
+  * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Kanit', sans-serif; }
   body {
     background: #0f0f0f;
     color: #fff;
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -26,7 +26,7 @@
     background: #1a1a1a;
     padding: 40px;
     border-radius: 20px;
-    width: 100%;
+    width: 90%;
     max-width: 400px;
     border: 1px solid #333;
     text-align: center;
@@ -40,8 +40,9 @@
     margin-bottom: 25px;
     letter-spacing: 2px;
   }
+  .logo span { color: #fff; }
 
-  h2 { margin-bottom: 20px; font-weight: 500; font-size: 20px; color: #ccc; }
+  h2 { margin-bottom: 20px; font-weight: 400; font-size: 20px; color: #ccc; }
 
   input {
     width: 100%;
@@ -80,18 +81,20 @@
   
   .back-home {
     margin-top: 30px;
-    display: block;
+    display: inline-block;
     color: #555;
     font-size: 13px;
     text-decoration: none;
+    transition: 0.3s;
   }
+  .back-home:hover { color: #ccc; }
 </style>
 </head>
 
 <body>
 
 <div class="login-box">
-  <div class="logo">B.SNEAKERS</div>
+  <div class="logo">B.<span>SNEAKERS</span></div>
   <h2>ยินดีต้อนรับกลับมา</h2>
 
   <form onsubmit="login(event)">
@@ -105,7 +108,7 @@
     <p style="margin-top: 10px;">ยังไม่มีบัญชี? <a href="register.html">สมัครสมาชิกที่นี่</a></p>
   </div>
 
-  <a href="homepage.html" class="back-home">← กลับไปหน้าหลัก</a>
+  <a href="index.html" class="back-home">← กลับไปหน้าหลัก</a>
 </div>
 
 <script>
@@ -114,7 +117,7 @@ emailjs.init({
   publicKey: "tf8DPZts5EhL3KHlb"
 });
 
-/* ===== LOGIN (อัปเดตระบบ Admin Role) ===== */
+/* ===== LOGIN (อัปเดตระบบ Admin Role และเปลี่ยนลิงก์หน้าแรก) ===== */
 function login(e){
   e.preventDefault();
 
@@ -126,33 +129,38 @@ function login(e){
 
   if(found){
     // บันทึกสถานะผู้ใช้ปัจจุบัน
-    // เพิ่มเงื่อนไข role: 'admin' เพื่อให้หน้าอื่นตรวจสอบได้ง่ายขึ้น
     localStorage.setItem("currentUser", JSON.stringify({
       username: found.username,
       email: found.email,
-      role: found.username === "admin" ? "admin" : "user" 
+      avatar: found.avatar || "", // เก็บรูปโปรไฟล์ถ้ามี
+      role: found.username.toLowerCase() === "admin" ? "admin" : "user" 
     }));
     
     Swal.fire({
       icon: 'success',
       title: 'เข้าสู่ระบบสำเร็จ',
-      text: found.username === "admin" ? 'ยินดีต้อนรับผู้ดูแลระบบ' : 'ยินดีต้อนรับคุณ ' + username,
+      text: found.username.toLowerCase() === "admin" ? 'ยินดีต้อนรับผู้ดูแลระบบ' : 'ยินดีต้อนรับคุณ ' + username,
       showConfirmButton: false,
-      timer: 1500
+      timer: 1500,
+      background: '#1a1a1a',
+      color: '#fff'
     }).then(() => {
-      window.location.href = "homepage.html";
+      // แก้ไขจุดที่ 2: เปลี่ยนเป็น index.html
+      window.location.href = "index.html";
     });
   } else {
     Swal.fire({
       icon: 'error',
-      title: 'ล้มเหลว',
-      text: 'ชื่อผู้ใช้หรือรหัสผ่านไม่ถูกต้อง',
-      confirmButtonColor: '#e60023'
+      title: 'ข้อมูลไม่ถูกต้อง',
+      text: 'ชื่อผู้ใช้หรือรหัสผ่านไม่ถูกต้อง กรุณาลองใหม่',
+      confirmButtonColor: '#e60023',
+      background: '#1a1a1a',
+      color: '#fff'
     });
   }
 }
 
-/* ===== ฟังก์ชัน Reset Password อื่นๆ ของคุณ (คงไว้ตามเดิม) ===== */
+/* ===== ระบบลืมรหัสผ่าน (เหมือนเดิมแต่ปรับสี Swal ให้เข้ากับธีม) ===== */
 async function startReset(){
   const { value: username } = await Swal.fire({
     title: 'ลืมรหัสผ่าน',
@@ -160,26 +168,32 @@ async function startReset(){
     inputLabel: 'กรอกชื่อผู้ใช้ของคุณ',
     inputPlaceholder: 'Username...',
     showCancelButton: true,
-    confirmButtonColor: '#e60023'
+    confirmButtonColor: '#e60023',
+    background: '#1a1a1a',
+    color: '#fff'
   });
+  
   if(!username) return;
   const users = JSON.parse(localStorage.getItem("users")) || [];
   const found = users.find(u => u.username === username.trim());
+  
   if(!found){
-    Swal.fire('ไม่พบชื่อผู้ใช้', '', 'error');
+    Swal.fire({ icon: 'error', title: 'ไม่พบชื่อผู้ใช้', background: '#1a1a1a', color: '#fff' });
     return;
   }
+  
   const email = found.email;
   if(!email){
-    Swal.fire('ผิดพลาด', 'บัญชีนี้ไม่ได้ผูกอีเมลไว้', 'warning');
+    Swal.fire({ icon: 'warning', title: 'ผิดพลาด', text: 'บัญชีนี้ไม่ได้ผูกอีเมลไว้', background: '#1a1a1a', color: '#fff' });
     return;
   }
+  
   const otp = Math.floor(100000 + Math.random() * 900000).toString();
   localStorage.setItem("resetUser", username);
   localStorage.setItem("resetOTP", otp);
   localStorage.setItem("resetExpire", (Date.now() + 5*60*1000).toString());
 
-  Swal.fire({ title: 'กำลังส่ง OTP...', allowOutsideClick: false, didOpen: () => { Swal.showLoading(); } });
+  Swal.fire({ title: 'กำลังส่ง OTP...', background: '#1a1a1a', color: '#fff', allowOutsideClick: false, didOpen: () => { Swal.showLoading(); } });
 
   emailjs.send("service_j4ys8un", "template_hjwypf7", {
     to_email: email,
@@ -187,10 +201,10 @@ async function startReset(){
     shop_name: "B.Sneakers Shop"
   })
   .then(()=>{
-    Swal.fire('สำเร็จ', 'ส่ง OTP ไปที่อีเมล ' + email + ' แล้ว', 'success').then(verifyOTP);
+    Swal.fire({ icon: 'success', title: 'สำเร็จ', text: 'ส่ง OTP ไปที่อีเมล ' + email + ' แล้ว', background: '#1a1a1a', color: '#fff' }).then(verifyOTP);
   })
   .catch(err=>{
-    Swal.fire('ผิดพลาด', 'ส่งอีเมลไม่สำเร็จ', 'error');
+    Swal.fire({ icon: 'error', title: 'ผิดพลาด', text: 'ส่งอีเมลไม่สำเร็จ กรุณาลองใหม่ภายหลัง', background: '#1a1a1a', color: '#fff' });
   });
 }
 
@@ -200,18 +214,20 @@ function verifyOTP(){
     input: 'text',
     inputLabel: 'กรอกรหัส 6 หลักจากอีเมล',
     confirmButtonColor: '#e60023',
-    showCancelButton: true
+    showCancelButton: true,
+    background: '#1a1a1a',
+    color: '#fff'
   }).then((result) => {
     if (result.isConfirmed) {
       const input = result.value;
       const realOTP = localStorage.getItem("resetOTP");
       const expire = Number(localStorage.getItem("resetExpire"));
       if(Date.now() > expire){
-        Swal.fire('OTP หมดอายุ', 'กรุณาขอรหัสใหม่', 'error');
+        Swal.fire({ icon: 'error', title: 'OTP หมดอายุ', text: 'กรุณาขอรหัสใหม่', background: '#1a1a1a', color: '#fff' });
         return;
       }
       if(input !== realOTP){
-        Swal.fire('รหัสไม่ถูกต้อง', '', 'error');
+        Swal.fire({ icon: 'error', title: 'รหัสไม่ถูกต้อง', background: '#1a1a1a', color: '#fff' });
         return;
       }
       setNewPassword();
@@ -225,7 +241,9 @@ function setNewPassword(){
     input: 'password',
     inputPlaceholder: 'รหัสผ่านใหม่อย่างน้อย 4 ตัว',
     confirmButtonColor: '#e60023',
-    showCancelButton: true
+    showCancelButton: true,
+    background: '#1a1a1a',
+    color: '#fff'
   }).then((result) => {
     if (result.isConfirmed && result.value.length >= 4) {
       const newPass = result.value;
@@ -236,9 +254,9 @@ function setNewPassword(){
       localStorage.removeItem("resetOTP");
       localStorage.removeItem("resetUser");
       localStorage.removeItem("resetExpire");
-      Swal.fire('สำเร็จ', 'เปลี่ยนรหัสผ่านเรียบร้อย เข้าสู่ระบบได้เลย', 'success');
+      Swal.fire({ icon: 'success', title: 'สำเร็จ', text: 'เปลี่ยนรหัสผ่านเรียบร้อย เข้าสู่ระบบได้เลย', background: '#1a1a1a', color: '#fff' });
     } else if (result.value) {
-      Swal.fire('รหัสผ่านสั้นเกินไป', '', 'warning');
+      Swal.fire({ icon: 'warning', title: 'รหัสผ่านสั้นเกินไป', background: '#1a1a1a', color: '#fff' });
     }
   });
 }

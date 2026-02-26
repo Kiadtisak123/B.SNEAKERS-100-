@@ -56,12 +56,14 @@
 <body>
 
     <aside>
-        <a href="homepage.html" class="logo">B.<span>SNEAKERS</span></a>
+        <a href="index.html" class="logo">B.<span>SNEAKERS</span></a>
+        
         <div class="menu-item active" onclick="switchTab('dash', this)"><i class="fas fa-chart-line"></i> แดชบอร์ด</div>
         <div class="menu-item" onclick="switchTab('stock', this)"><i class="fas fa-boxes-stacked"></i> สต็อกสินค้า</div>
         <div class="menu-item" onclick="switchTab('order', this)"><i class="fas fa-file-invoice-dollar"></i> ออเดอร์</div>
         <hr style="margin: 20px 0; opacity: 0.1; border: 0; border-top: 1px solid #fff;">
-        <a href="homepage.html" class="menu-item"><i class="fas fa-shop"></i> ไปหน้าบ้าน</a>
+        
+        <a href="index.html" class="menu-item"><i class="fas fa-shop"></i> ไปหน้าบ้าน</a>
     </aside>
 
     <main>
@@ -155,7 +157,6 @@
         }
 
         function render() {
-            // โหลดข้อมูลล่าสุดจาก Storage
             products = JSON.parse(localStorage.getItem('sneaker_prods')) || [];
             orders = JSON.parse(localStorage.getItem('orders')) || [];
 
@@ -164,7 +165,6 @@
             document.getElementById('newOrderCount').innerText = orders.filter(o => o.status === 'paid').length;
             document.getElementById('prodCount').innerText = products.reduce((s,p) => s + Number(p.stock || 0), 0);
 
-            // แสดงรายการล่าสุดในหน้า Dash (สามารถกดจัดการได้เลย)
             document.getElementById('recentOrderBody').innerHTML = orders.slice(-5).reverse().map((o) => {
                 const realIndex = orders.indexOf(o);
                 return `
@@ -260,7 +260,6 @@
             });
 
             if (res) {
-                // ระบบตัดสต็อกอัตโนมัติ (จะตัดสต็อกครั้งเดียวเมื่อสถานะเป็น shipping หรือ success)
                 if ((res.status === 'shipping' || res.status === 'success') && (o.status !== 'shipping' && o.status !== 'success')) {
                     o.items.forEach(orderItem => {
                         const pIdx = products.findIndex(p => p.name === orderItem.name);
@@ -269,7 +268,6 @@
                         }
                     });
                 }
-                
                 orders[index] = { ...o, ...res };
                 saveAll();
                 Swal.fire('สำเร็จ', 'อัปเดตสถานะและตัดสต็อกเรียบร้อย', 'success');

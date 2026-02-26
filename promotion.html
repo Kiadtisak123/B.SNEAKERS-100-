@@ -7,10 +7,11 @@
 
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;600&display=swap" rel="stylesheet">
 
 <style>
-  * { margin:0; padding:0; box-sizing:border-box; font-family:'Segoe UI', sans-serif; }
-  body { background:#0f0f0f; color:#fff; }
+  * { margin:0; padding:0; box-sizing:border-box; font-family:'Kanit', sans-serif; }
+  body { background:#0f0f0f; color:#fff; min-height: 100vh; }
 
   /* ===== HEADER ===== */
   header {
@@ -19,6 +20,8 @@
     border-bottom: 2px solid #e60023; position: sticky; top: 0; z-index: 1000;
   }
   .logo { font-size: 24px; font-weight: bold; color: #e60023; text-decoration: none; letter-spacing: 1px; }
+  .logo span { color: #fff; }
+  
   nav { display: flex; gap: 20px; align-items: center; }
   nav a { color: #fff; text-decoration: none; font-size: 14px; transition: 0.3s; }
   nav a:hover { color: #e60023; }
@@ -35,12 +38,12 @@
 
   /* ===== CONTENT ===== */
   .container { max-width: 1200px; margin: 40px auto; padding: 20px; }
-  h1 { margin-bottom: 25px; border-left: 5px solid #e60023; padding-left: 15px; }
+  h1 { margin-bottom: 30px; border-left: 5px solid #e60023; padding-left: 15px; font-size: 28px; }
 
   .grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
-    gap: 25px;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 30px;
   }
 
   .card {
@@ -52,42 +55,48 @@
 
   .badge {
     position: absolute; top: 15px; left: 15px; background: #e60023;
-    color: white; padding: 6px 12px; border-radius: 10px;
+    color: white; padding: 6px 15px; border-radius: 12px;
     font-size: 14px; font-weight: bold; z-index: 10;
+    box-shadow: 0 4px 10px rgba(230,0,35,0.4);
   }
 
-  .img-box { width: 100%; height: 200px; overflow: hidden; }
-  .card img { width: 100%; height: 100%; object-fit: cover; transition: 0.5s; }
+  .img-box { width: 100%; height: 250px; overflow: hidden; background: #000; }
+  .card img { width: 100%; height: 100%; object-fit: cover; transition: 0.6s; }
   .card:hover img { transform: scale(1.1); }
 
-  .card-body { padding: 20px; flex-grow: 1; }
-  .card-body h3 { font-size: 18px; margin-bottom: 10px; height: 50px; overflow: hidden; }
+  .card-body { padding: 20px; flex-grow: 1; display: flex; flex-direction: column; }
+  .card-body h3 { font-size: 18px; margin-bottom: 12px; height: 50px; overflow: hidden; color: #eee; }
 
-  .old-price { color: #888; text-decoration: line-through; font-size: 14px; }
-  .new-price { color: #00ff99; font-size: 24px; font-weight: bold; margin: 5px 0 15px; }
+  .price-section { margin-bottom: 20px; }
+  .old-price { color: #888; text-decoration: line-through; font-size: 15px; }
+  .new-price { color: #00ff99; font-size: 26px; font-weight: bold; margin-top: 2px; }
 
   .btn {
-    width: 100%; background: #e60023; border: none; padding: 12px;
+    width: 100%; background: #e60023; border: none; padding: 14px;
     color: #fff; border-radius: 12px; cursor: pointer; font-weight: bold;
     display: flex; align-items: center; justify-content: center; gap: 8px; transition: 0.3s;
+    font-size: 15px;
   }
   .btn:hover { background: #ff1a3d; transform: scale(1.02); }
 
-  .back { display: block; text-align: center; margin-top: 40px; color: #aaa; text-decoration: none; transition: 0.3s; }
-  .back:hover { color: #fff; }
+  .back { 
+    display: inline-flex; align-items: center; gap: 10px;
+    margin-top: 50px; color: #888; text-decoration: none; transition: 0.3s; 
+    width: 100%; justify-content: center;
+  }
+  .back:hover { color: #e60023; }
 </style>
 </head>
 
 <body>
 
 <header>
-  <a href="Homepage.html" class="logo">B.SNEAKERS</a>
+  <a href="index.html" class="logo">B.<span>SNEAKERS</span></a>
   <nav>
     <a href="product.html">สินค้าทั้งหมด</a>
     <a href="Air Force.html">Air Force</a>
-    <a href="Air Jordan 4.html">Air Jordan 4</a>
-    <a href="Air Max.html">Air Max</a>
-    <a href="Dunk.html">Dunk</a>
+    <a href="Air Jordan 1 low .html">Jordan 1 Low</a>
+    <a href="Nike Dunk Low.html">Dunk Low</a>
     
     <a href="ตระกร้า.html" class="cart-link">
       <i class="fa-solid fa-cart-shopping"></i>
@@ -97,19 +106,21 @@
 </header>
 
 <div class="container">
-  <h1>🔥 ดีลเด็ดราคาพิเศษ</h1>
+  <h1>🔥 ดีลเด็ดราคาพิเศษ (Limited Time)</h1>
 
   <div class="grid">
     <div class="card">
       <span class="badge">ลด 30%</span>
       <div class="img-box">
-        <img src="https://images.unsplash.com/photo-1600185365483-26d7a4cc7519" id="img1">
+        <img src="https://images.unsplash.com/photo-1600185365483-26d7a4cc7519" alt="Air Force 1">
       </div>
       <div class="card-body">
         <h3>Nike Air Force 1 "Triple White"</h3>
-        <div class="old-price">฿2,290</div>
-        <div class="new-price">฿1,590</div>
-        <button class="btn" onclick="addToCart('Nike Air Force 1 Triple White', 1590, 'https://images.unsplash.com/photo-1600185365483-26d7a4cc7519')">
+        <div class="price-section">
+          <div class="old-price">฿2,290</div>
+          <div class="new-price">฿1,590</div>
+        </div>
+        <button class="btn" onclick="addToCart('PROMO-001', 'Nike Air Force 1 Triple White', 1590, 'https://images.unsplash.com/photo-1600185365483-26d7a4cc7519')">
           <i class="fa-solid fa-cart-plus"></i> เพิ่มลงตะกร้า
         </button>
       </div>
@@ -118,13 +129,15 @@
     <div class="card">
       <span class="badge">ลด 40%</span>
       <div class="img-box">
-        <img src="https://images.unsplash.com/photo-1542291026-7eec264c27ff" id="img2">
+        <img src="https://images.unsplash.com/photo-1542291026-7eec264c27ff" alt="Dunk Low">
       </div>
       <div class="card-body">
         <h3>Nike Dunk Low Retro "Panda"</h3>
-        <div class="old-price">฿2,490</div>
-        <div class="new-price">฿1,490</div>
-        <button class="btn" onclick="addToCart('Nike Dunk Low Retro Panda', 1490, 'https://images.unsplash.com/photo-1542291026-7eec264c27ff')">
+        <div class="price-section">
+          <div class="old-price">฿2,490</div>
+          <div class="new-price">฿1,490</div>
+        </div>
+        <button class="btn" onclick="addToCart('PROMO-002', 'Nike Dunk Low Retro Panda', 1490, 'https://images.unsplash.com/photo-1542291026-7eec264c27ff')">
           <i class="fa-solid fa-cart-plus"></i> เพิ่มลงตะกร้า
         </button>
       </div>
@@ -133,55 +146,70 @@
     <div class="card">
       <span class="badge">ลด 35%</span>
       <div class="img-box">
-        <img src="https://images.unsplash.com/photo-1528701800489-20be3c4a6f3a" id="img3">
+        <img src="https://images.unsplash.com/photo-1514989940723-e8e51635b782" alt="Air Max">
       </div>
       <div class="card-body">
         <h3>Nike Air Max 90 Essentials</h3>
-        <div class="old-price">฿2,990</div>
-        <div class="new-price">฿1,950</div>
-        <button class="btn" onclick="addToCart('Nike Air Max 90 Essentials', 1950, 'https://images.unsplash.com/photo-1528701800489-20be3c4a6a9a')">
+        <div class="price-section">
+          <div class="old-price">฿2,990</div>
+          <div class="new-price">฿1,950</div>
+        </div>
+        <button class="btn" onclick="addToCart('PROMO-003', 'Nike Air Max 90 Essentials', 1950, 'https://images.unsplash.com/photo-1514989940723-e8e51635b782')">
           <i class="fa-solid fa-cart-plus"></i> เพิ่มลงตะกร้า
         </button>
       </div>
     </div>
   </div>
 
-  <a class="back" href="Homepage.html">← กลับไปช้อปต่อหน้าหลัก</a>
+  <a class="back" href="index.html">
+    <i class="fa-solid fa-arrow-left"></i> กลับไปช้อปต่อหน้าหลัก
+  </a>
 </div>
 
 <script>
 // โหลดจำนวนตะกร้าเมื่อเปิดหน้า
 updateCartCount();
 
-function addToCart(name, price, img){
+function addToCart(id, name, price, img){
   let cart = JSON.parse(localStorage.getItem("cart")) || [];
+  
+  // ตรวจสอบว่ามีสินค้าเดิมอยู่ในตะกร้าไหม (ใช้ชื่อเป็นตัวเช็คสำหรับสินค้าโปรโมชั่น)
   const index = cart.findIndex(i => i.name === name);
 
   if(index > -1){
     cart[index].qty++;
   } else {
-    cart.push({name: name, price: price, img: img, qty: 1});
+    cart.push({
+      id: id,
+      name: name, 
+      price: price, 
+      img: img, 
+      qty: 1,
+      size: 'Free Size' // ค่าเริ่มต้นสำหรับสินค้าด่วน
+    });
   }
 
   localStorage.setItem("cart", JSON.stringify(cart));
   updateCartCount();
 
-  // แจ้งเตือนสวยๆ ด้วย SweetAlert2
+  // แจ้งเตือนสไตล์ Modern
   Swal.fire({
     icon: 'success',
     title: 'เก็บลงตะกร้าแล้ว!',
-    text: `เพิ่ม ${name} เรียบร้อย`,
+    text: `เพิ่ม ${name} เรียบร้อยแล้วครับ`,
     toast: true,
     position: 'top-end',
     showConfirmButton: false,
     timer: 2000,
-    timerProgressBar: true
+    timerProgressBar: true,
+    background: '#1a1a1a',
+    color: '#fff'
   });
 }
 
 function updateCartCount(){
   let cart = JSON.parse(localStorage.getItem("cart")) || [];
-  let totalQty = cart.reduce((sum, item) => sum + item.qty, 0);
+  let totalQty = cart.reduce((sum, item) => sum + Number(item.qty), 0);
   document.getElementById("cartCount").innerText = totalQty;
 }
 </script>

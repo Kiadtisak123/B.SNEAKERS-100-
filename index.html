@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>B.Sneakers | รองเท้ามือสองของแท้คุณภาพดี</title>
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;600&display=swap" rel="stylesheet">
+
+<style>
+    /* CSS พื้นฐาน - ปรับฟอนต์และความพรีเมียม */
+    *{margin:0;padding:0;box-sizing:border-box;font-family:'Kanit', sans-serif}
+    body{background:#0f0f0f;color:#fff; overflow-x: hidden;}
+    
+    header{background:#111;padding:15px 30px;display:flex;justify-content:space-between;align-items:center;border-bottom:2px solid #e60023;position:sticky;top:0;z-index:1000}
+    .logo{font-size:24px;font-weight:bold;color:#e60023;letter-spacing:1px;text-decoration:none}
+    .logo span { color: #fff; }
+
+    nav{display:flex;align-items:center;gap:15px}
+    nav a{color:#fff;text-decoration:none;font-size:14px;transition:.3s;padding:5px 10px;}
+    nav a:hover{color:#e60023}
+
+    /* สไตล์โปรไฟล์ที่ดึงรูปมาโชว์ */
+    .user-profile-tag {
+        display: none;
+        align-items: center;
+        gap: 10px;
+        background: rgba(255, 255, 255, 0.05);
+        padding: 5px 12px;
+        border-radius: 50px;
+        border: 1px solid #333;
+        color: #fff;
+        cursor: pointer;
+        transition: 0.3s;
+    }
+    .user-profile-tag:hover { background: rgba(230, 0, 35, 0.1); border-color: #e60023; }
+    
+    .user-avatar-mini {
+        width: 28px;
+        height: 28px;
+        border-radius: 50%;
+        object-fit: cover;
+        border: 1.5px solid #e60023;
+    }
+
+    .icon-btn{cursor:pointer;background:#1a1a1a;padding:10px;border-radius:12px;border:1px solid #222;position:relative;transition:.3s;display:flex;align-items:center;justify-content:center;color:white;text-decoration: none;}
+    .icon-btn:hover{background:#222;border-color:#e60023}
+    
+    #cartCount{position:absolute;top:-8px;right:-8px;background:#e60023;color:#fff;font-size:11px;padding:2px 6px;border-radius:50%;font-weight:bold;border: 2px solid #111;}
+
+    .hero{background:linear-gradient(rgba(0,0,0,.7),rgba(0,0,0,.9)),url('https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=1200');background-size:cover;background-position:center;padding:120px 20px;text-align:center}
+    .hero h1{font-size:48px;margin-bottom:15px;text-transform:uppercase; letter-spacing: 2px;}
+    .hero p { color: #ccc; font-size: 18px; margin-bottom: 30px; }
+    
+    .section{padding:60px 20px;max-width:1200px;margin:auto}
+    .section h2 { font-size: 28px; margin-bottom: 30px; border-left: 5px solid #e60023; padding-left: 15px; }
+    
+    .grid{display:grid;grid-template-columns:repeat(auto-fill, minmax(280px, 1fr));gap:25px}
+    
+    .card{background:#1a1a1a;border-radius:18px;overflow:hidden;border:1px solid #222;transition:.4s;cursor:pointer; position: relative;}
+    .card:hover{transform:translateY(-10px);border-color:#e60023; box-shadow: 0 10px 20px rgba(0,0,0,0.4);}
+    .card img{width:100%;height:250px;object-fit:cover; transition: .4s;}
+    .card:hover img { transform: scale(1.05); }
+    .card-body{padding:20px;}
+    .card-body h3 { font-size: 18px; margin-bottom: 10px; color: #eee; }
+    .price{color:#e60023;font-size:22px;font-weight:bold;}
+
+    .admin-fab { position: fixed; bottom: 30px; right: 30px; background: #ffc107; color: #000; width: 60px; height: 60px; border-radius: 50%; display: none; align-items: center; justify-content: center; z-index: 9999; border: 2px solid #000; text-decoration: none; box-shadow: 0 5px 15px rgba(0,0,0,0.3); transition: .3s;}
+    .admin-fab:hover { transform: scale(1.1) rotate(15deg); }
+</style>
+</head>
+
+<body>
+
+<header>
+    <a href="index.html" class="logo">B.<span>SNEAKERS</span></a>
+    <nav id="mainNav">
+        <a href="index.html" style="color:#e60023;">หน้าแรก</a>
+        <a href="product.html">สินค้า</a>
+        <a href="promotion.html">โปรโมชั่น</a> 
+        <a href="orders.html" id="orderLink" style="display:none;">ประวัติสั่งซื้อ</a>
+        <a href="contact.html">ติดต่อเรา</a>
+        
+        <a href="login.html" id="loginLink">เข้าสู่ระบบ</a>
+        
+        <div id="userDisplay" class="user-profile-tag" onclick="location.href='profile.html'">
+            <img id="userAvatarHeader" src="" class="user-avatar-mini" style="display:none;">
+            <i id="userDefaultIcon" class="fa-solid fa-circle-user" style="color:#e60023;"></i>
+            <span id="userNameText"></span>
+        </div>
+
+        <a href="ตระกร้า.html" class="icon-btn">
+            <i class="fa-solid fa-cart-shopping"></i>
+            <span id="cartCount">0</span>
+        </a>
+        
+        <div class="icon-btn" id="logoutBtn" onclick="handleLogout()" style="display:none; color: #ff4d4d;">
+            <i class="fa-solid fa-right-from-bracket"></i>
+        </div>
+    </nav>
+</header>
+
+<a href="admin.html" id="adminFab" class="admin-fab" title="จัดการระบบ"><i class="fa-solid fa-user-gear"></i></a>
+
+<section class="hero">
+    <h1>B.SNEAKERS STORE</h1>
+    <p>แหล่งรวมรองเท้ามือสองของแท้ 100% สภาพนางฟ้า ราคาเป็นกันเอง</p>
+    <a href="product.html" style="background:#e60023; color:#fff; padding:12px 30px; text-decoration:none; border-radius:30px; font-weight:bold; transition:.3s;">เลือกซื้อสินค้าเลย</a>
+</section>
+
+<section class="section">
+    <h2><i class="fa-solid fa-fire" style="color:#ffae00;"></i> สินค้าแนะนำ</h2>
+    <div class="grid" id="productGrid">
+        </div>
+</section>
+
+<script>
+// เช็คสถานะการเข้าสู่ระบบ
+function checkAuth() {
+    const user = JSON.parse(localStorage.getItem("currentUser"));
+    
+    if (user) {
+        document.getElementById("loginLink").style.display = "none";
+        document.getElementById("userDisplay").style.display = "flex";
+        document.getElementById("userNameText").textContent = user.username;
+        document.getElementById("logoutBtn").style.display = "flex";
+        document.getElementById("orderLink").style.display = "inline-block";
+
+        const avatarImg = document.getElementById("userAvatarHeader");
+        const defaultIcon = document.getElementById("userDefaultIcon");
+        
+        if(user.avatar) {
+            avatarImg.src = user.avatar;
+            avatarImg.style.display = "block";
+            defaultIcon.style.display = "none";
+        }
+
+        // เช็คสิทธิ์ Admin
+        if (user.role === "admin" || user.username.toLowerCase() === "admin") {
+            document.getElementById("adminFab").style.display = "flex";
+        }
+    }
+}
+
+// แสดงสินค้า 8 ชิ้นแรกในหน้าแรก
+function renderProducts() {
+    const grid = document.getElementById("productGrid");
+    const products = JSON.parse(localStorage.getItem('sneaker_prods')) || [];
+    
+    if (products.length === 0) {
+        grid.innerHTML = "<p style='grid-column: 1/-1; text-align:center; color:#666;'>กำลังเตรียมข้อมูลสินค้าใหม่...</p>";
+        return;
+    }
+
+    grid.innerHTML = products.slice(0, 8).map(p => `
+        <div class="card" onclick="goToDetail('${p.id}')">
+            <img src="${(p.images && p.images[0]) || 'https://via.placeholder.com/400'}" alt="${p.name}">
+            <div class="card-body">
+                <h3>${p.name}</h3>
+                <div class="price">฿${Number(p.price).toLocaleString()}</div>
+            </div>
+        </div>`).join('');
+}
+
+// ไปหน้าละเอียดสินค้า
+function goToDetail(id) {
+    const products = JSON.parse(localStorage.getItem('sneaker_prods')) || [];
+    const found = products.find(item => String(item.id) === String(id));
+    if (found) {
+        localStorage.setItem("selectedProduct", JSON.stringify(found));
+        window.location.href = "detail.html";
+    }
+}
+
+// ออกจากระบบ
+function handleLogout() {
+    Swal.fire({
+        title: 'ออกจากระบบ?',
+        icon: 'question',
+        showCancelButton: true,
+        confirmButtonColor: '#e60023',
+        confirmButtonText: 'ใช่, ออกจากระบบ',
+        cancelButtonText: 'ยกเลิก',
+        background: '#1a1a1a',
+        color: '#fff'
+    }).then((result) => {
+        if (result.isConfirmed) {
+            localStorage.removeItem("currentUser");
+            location.reload();
+        }
+    });
+}
+
+// อัปเดตตัวเลขในตะกร้า
+function updateCart() {
+    const cart = JSON.parse(localStorage.getItem("cart")) || [];
+    document.getElementById("cartCount").textContent = cart.length;
+}
+
+window.onload = function() {
+    checkAuth();
+    renderProducts();
+    updateCart();
+};
+</script>
+</body>
+</html>

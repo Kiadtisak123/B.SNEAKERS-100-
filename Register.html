@@ -8,7 +8,10 @@
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
 <style>
-  * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+  /* ใช้ฟอนต์ Kanit เพื่อความพรีเมียมเหมือนหน้าหลัก */
+  @import url('https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;600&display=swap');
+
+  * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Kanit', sans-serif; }
   body { 
     background: #0f0f0f; 
     color: #fff; 
@@ -27,7 +30,9 @@
     align-items: center;
   }
   
-  .logo { font-size: 24px; font-weight: bold; color: #e60023; letter-spacing: 1px; }
+  /* เพิ่มลิงก์ที่โลโก้ให้กลับหน้า index.html */
+  .logo { font-size: 24px; font-weight: bold; color: #e60023; letter-spacing: 1px; text-decoration: none; }
+  .logo span { color: #fff; }
 
   .wrapper { 
     flex: 1; 
@@ -98,7 +103,7 @@
 <body>
 
 <header>
-  <div class="logo">B.SNEAKERS</div>
+  <a href="index.html" class="logo">B.<span>SNEAKERS</span></a>
 </header>
 
 <div class="wrapper">
@@ -130,43 +135,39 @@ function register(e){
   const pass = document.getElementById("newPass").value;
   const confirm = document.getElementById("confirmPass").value;
 
-  // ตรวจสอบความครบถ้วน
   if(!user || !email || !pass){
-    Swal.fire('ผิดพลาด', 'กรุณากรอกข้อมูลให้ครบทุกช่อง', 'error');
+    Swal.fire({ icon: 'error', title: 'ผิดพลาด', text: 'กรุณากรอกข้อมูลให้ครบทุกช่อง', background: '#1a1a1a', color: '#fff' });
     return;
   }
 
-  // ตรวจสอบความยาวรหัสผ่าน
   if(pass.length < 4){
-    Swal.fire('รหัสผ่านสั้นไป', 'รหัสผ่านต้องมีอย่างน้อย 4 ตัวอักษร', 'warning');
+    Swal.fire({ icon: 'warning', title: 'รหัสผ่านสั้นไป', text: 'รหัสผ่านต้องมีอย่างน้อย 4 ตัวอักษร', background: '#1a1a1a', color: '#fff' });
     return;
   }
 
-  // ตรวจสอบการยืนยันรหัสผ่าน
   if(pass !== confirm){
-    Swal.fire('ไม่ตรงกัน', 'รหัสผ่านและยืนยันรหัสผ่านไม่ตรงกัน', 'error');
+    Swal.fire({ icon: 'error', title: 'ไม่ตรงกัน', text: 'รหัสผ่านและยืนยันรหัสผ่านไม่ตรงกัน', background: '#1a1a1a', color: '#fff' });
     return;
   }
 
   let users = JSON.parse(localStorage.getItem("users")) || [];
 
-  // เช็คชื่อซ้ำ
   if(users.some(u => u.username === user)){
-    Swal.fire('ชื่อนี้ถูกใช้แล้ว', 'กรุณาใช้ชื่อผู้ใช้อื่น', 'warning');
+    Swal.fire({ icon: 'warning', title: 'ชื่อนี้ถูกใช้แล้ว', text: 'กรุณาใช้ชื่อผู้ใช้อื่น', background: '#1a1a1a', color: '#fff' });
     return;
   }
 
-  // เช็คอีเมลซ้ำ
   if(users.some(u => u.email === email)){
-    Swal.fire('อีเมลนี้ถูกใช้แล้ว', 'กรุณาใช้อีเมลอื่น', 'warning');
+    Swal.fire({ icon: 'warning', title: 'อีเมลนี้ถูกใช้แล้ว', text: 'กรุณาใช้อีเมลอื่น', background: '#1a1a1a', color: '#fff' });
     return;
   }
 
-  // บันทึกข้อมูล
+  // เพิ่ม Role เพื่อรองรับระบบหน้าแรกที่คุณทำไว้
   users.push({
     username: user,
     email: email,
-    password: pass
+    password: pass,
+    role: (user.toLowerCase() === 'admin') ? 'admin' : 'user'
   });
 
   localStorage.setItem("users", JSON.stringify(users));
@@ -175,7 +176,9 @@ function register(e){
     icon: 'success',
     title: 'สมัครสมาชิกสำเร็จ!',
     text: 'กรุณาเข้าสู่ระบบเพื่อเริ่มใช้งาน',
-    confirmButtonColor: '#e60023'
+    confirmButtonColor: '#e60023',
+    background: '#1a1a1a',
+    color: '#fff'
   }).then(() => {
     window.location.href = "login.html";
   });
