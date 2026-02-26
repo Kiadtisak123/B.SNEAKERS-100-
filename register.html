@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>สมัครสมาชิก | B.Sneakers</title>
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;600&display=swap');
+
+  * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Kanit', sans-serif; }
+  
+  body { 
+    background: #0f0f0f; 
+    color: #fff; 
+    display: flex; 
+    flex-direction: column; 
+    min-height: 100vh;
+    background: radial-gradient(circle at center, #1a1a1a 0%, #0f0f0f 100%);
+  }
+  
+  header { 
+    background: #111; 
+    padding: 15px 30px; 
+    border-bottom: 2px solid #e60023; 
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  
+  .logo { 
+    font-size: 24px; 
+    font-weight: bold; 
+    color: #e60023; 
+    letter-spacing: 1px; 
+    text-decoration: none; 
+  }
+  .logo span { color: #fff; }
+
+  /* ส่วนหัวข้อด้านบนที่เพิ่มเข้ามา */
+  .page-title {
+    text-align: center;
+    margin-top: 40px;
+  }
+  .page-title h1 {
+    font-size: 36px;
+    color: #fff;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+  }
+  .page-title .underline {
+    width: 60px;
+    height: 4px;
+    background: #e60023;
+    margin: 10px auto;
+    border-radius: 2px;
+  }
+
+  .wrapper { 
+    flex: 1; 
+    display: flex; 
+    justify-content: center; 
+    align-items: flex-start; /* ขยับขึ้นเล็กน้อยเพื่อให้เห็นหัวข้อชัด */
+    padding: 20px 20px 40px 20px; 
+  }
+
+  .register-box { 
+    background: rgba(26, 26, 26, 0.9); 
+    border: 1px solid #333; 
+    border-radius: 24px; 
+    padding: 40px; 
+    width: 100%; 
+    max-width: 420px; 
+    text-align: center;
+    box-shadow: 0 20px 50px rgba(0,0,0,0.8);
+    backdrop-filter: blur(10px);
+  }
+
+  h2 { margin-bottom: 10px; font-weight: 600; font-size: 22px; color: #fff; }
+  p { color: #888; margin-bottom: 30px; font-size: 14px; }
+
+  form { display: grid; gap: 18px; }
+
+  .input-group { position: relative; }
+  .input-group i { 
+    position: absolute; 
+    left: 15px; 
+    top: 50%; 
+    transform: translateY(-50%); 
+    color: #555; 
+    font-size: 18px;
+  }
+
+  input { 
+    width: 100%;
+    padding: 14px 14px 14px 45px; 
+    border-radius: 14px; 
+    border: 1px solid #333; 
+    background: #0a0a0a; 
+    color: #fff; 
+    font-size: 16px;
+    outline: none;
+    transition: 0.3s;
+  }
+
+  input:focus { 
+    border-color: #e60023; 
+    box-shadow: 0 0 12px rgba(230, 0, 35, 0.3); 
+    background: #000;
+  }
+
+  .btn { 
+    background: #e60023; 
+    border: none; 
+    padding: 16px; 
+    color: #fff; 
+    border-radius: 14px; 
+    cursor: pointer; 
+    font-size: 16px; 
+    font-weight: bold;
+    transition: 0.3s;
+    margin-top: 10px;
+  }
+
+  .btn:hover { 
+    background: #ff1a3d; 
+    transform: translateY(-3px); 
+    box-shadow: 0 8px 20px rgba(230, 0, 35, 0.4);
+  }
+
+  .link { margin-top: 25px; font-size: 14px; color: #aaa; }
+  .link a { color: #e60023; text-decoration: none; font-weight: 600; }
+
+  footer { 
+    background: #111; 
+    text-align: center; 
+    padding: 25px; 
+    border-top: 2px solid #e60023; 
+    color: #555; 
+    font-size: 13px;
+  }
+</style>
+</head>
+
+<body>
+
+<header>
+  <a href="index.html" class="logo">B.<span>SNEAKERS</span></a>
+</header>
+
+<div class="page-title">
+  <h1>สมัครสมาชิก</h1>
+  <div class="underline"></div>
+</div>
+
+<div class="wrapper">
+  <div class="register-box">
+    <h2>JOIN THE FAMILY</h2>
+    <p>สมัครสมาชิกเพื่อบันทึกที่อยู่จัดส่งและดูประวัติการสั่งซื้อ</p>
+
+    <form onsubmit="register(event)">
+      <div class="input-group">
+        <i class="fa-solid fa-user"></i>
+        <input type="text" id="newUser" placeholder="ชื่อผู้ใช้" required>
+      </div>
+      
+      <div class="input-group">
+        <i class="fa-solid fa-envelope"></i>
+        <input type="email" id="newEmail" placeholder="อีเมลของคุณ" required>
+      </div>
+
+      <div class="input-group">
+        <i class="fa-solid fa-lock"></i>
+        <input type="password" id="newPass" placeholder="รหัสผ่าน (4 ตัวขึ้นไป)" required>
+      </div>
+
+      <div class="input-group">
+        <i class="fa-solid fa-circle-check"></i>
+        <input type="password" id="confirmPass" placeholder="ยืนยันรหัสผ่านอีกครั้ง" required>
+      </div>
+
+      <button class="btn" type="submit">สร้างบัญชีผู้ใช้</button>
+    </form>
+
+    <div class="link">
+      เป็นสมาชิกอยู่แล้ว? <a href="login.html">เข้าสู่ระบบ</a>
+    </div>
+  </div>
+</div>
+
+<footer>© 2026 B.Sneakers - The Best Second-Hand Sneakers Hub</footer>
+
+<script>
+function register(e){
+  e.preventDefault();
+
+  const user = document.getElementById("newUser").value.trim();
+  const email = document.getElementById("newEmail").value.trim();
+  const pass = document.getElementById("newPass").value;
+  const confirm = document.getElementById("confirmPass").value;
+
+  if(pass.length < 4){
+    Swal.fire({ icon: 'warning', title: 'รหัสผ่านสั้นไป', text: 'กรุณาใช้รหัสผ่านอย่างน้อย 4 ตัวอักษร', background: '#1a1a1a', color: '#fff', confirmButtonColor: '#e60023' });
+    return;
+  }
+
+  if(pass !== confirm){
+    Swal.fire({ icon: 'error', title: 'รหัสไม่ตรงกัน', text: 'การยืนยันรหัสผ่านไม่ถูกต้อง', background: '#1a1a1a', color: '#fff', confirmButtonColor: '#e60023' });
+    return;
+  }
+
+  let users = JSON.parse(localStorage.getItem("users")) || [];
+
+  if(users.some(u => u.username === user)){
+    Swal.fire({ icon: 'warning', title: 'มีชื่อนี้ในระบบแล้ว', text: 'กรุณาเลือกชื่อผู้ใช้อื่น', background: '#1a1a1a', color: '#fff', confirmButtonColor: '#e60023' });
+    return;
+  }
+
+  users.push({
+    username: user,
+    email: email,
+    password: pass,
+    role: (user.toLowerCase() === 'admin') ? 'admin' : 'user',
+    joinedDate: new Date().toLocaleDateString()
+  });
+
+  localStorage.setItem("users", JSON.stringify(users));
+
+  Swal.fire({
+    icon: 'success',
+    title: 'สมัครสมาชิกสำเร็จ!',
+    text: 'ยินดีต้อนรับสู่ครอบครัว B.Sneakers',
+    confirmButtonColor: '#e60023',
+    background: '#1a1a1a',
+    color: '#fff'
+  }).then(() => {
+    window.location.href = "login.html";
+  });
+}
+</script>
+
+</body>
+</html>
