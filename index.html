@@ -10,7 +10,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;600&display=swap" rel="stylesheet">
 
 <style>
-    /* CSS พื้นฐาน - ปรับฟอนต์และความพรีเมียม */
+    /* CSS พื้นฐาน */
     *{margin:0;padding:0;box-sizing:border-box;font-family:'Kanit', sans-serif}
     body{background:#0f0f0f;color:#fff; overflow-x: hidden;}
     
@@ -71,7 +71,7 @@
         
         <a href="login.html" id="loginLink">เข้าสู่ระบบ</a>
         
-        <div id="userDisplay" class="user-profile-tag" onclick="location.href='Profile.html'">
+        <div id="userDisplay" class="user-profile-tag" onclick="location.href='profile.html'">
             <img id="userAvatarHeader" src="" class="user-avatar-mini" style="display:none;">
             <i id="userDefaultIcon" class="fa-solid fa-circle-user" style="color:#e60023;"></i>
             <span id="userNameText"></span>
@@ -126,7 +126,7 @@ function checkAuth() {
     }
 }
 
-// แสดงสินค้าแนะนำ (8 ชิ้นล่าสุด)
+// แสดงสินค้าแนะนำ
 function renderProducts() {
     const grid = document.getElementById("productGrid");
     const products = JSON.parse(localStorage.getItem('sneaker_prods')) || [];
@@ -136,7 +136,6 @@ function renderProducts() {
         return;
     }
 
-    // เรียงเอาอันล่าสุดขึ้นก่อน และเลือก 8 ชิ้นแรก
     grid.innerHTML = products.reverse().slice(0, 8).map(p => {
         const displayImg = (p.images && p.images.length > 0) ? p.images[0] : (p.img || 'https://via.placeholder.com/400');
         
@@ -172,7 +171,7 @@ function handleLogout() {
     }).then((result) => {
         if (result.isConfirmed) {
             localStorage.removeItem("currentUser");
-            window.location.href = "index.html"; // รีเฟรชหน้ากลับมาที่ index
+            window.location.href = "index.html";
         }
     });
 }
