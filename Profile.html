@@ -149,7 +149,7 @@
         <button class="btn btn-secondary" onclick="location.href='index.html'">
           <i class="fa-solid fa-house"></i> หน้าหลัก
         </button>
-        <button class="btn btn-secondary" onclick="location.href='order-history.html'">
+        <button class="btn btn-secondary" onclick="location.href='ประวัติสั่งซื้อ.html'">
           <i class="fa-solid fa-clock-rotate-left"></i> ประวัติสั่งซื้อ
         </button>
       </div>
@@ -177,59 +177,36 @@ if(currentUser.avatar) {
   document.getElementById("avatarImg").src = currentUser.avatar;
 }
 
-// ฟังก์ชันบีบอัดรูปโปรไฟล์เพื่อประหยัดพื้นที่ LocalStorage
-async function compressAvatar(file) {
-    return new Promise((resolve) => {
-        const reader = new FileReader();
-        reader.readAsDataURL(file);
-        reader.onload = (e) => {
-            const img = new Image();
-            img.src = e.target.result;
-            img.onload = () => {
-                const canvas = document.createElement('canvas');
-                const ctx = canvas.getContext('2d');
-                const maxW = 300; // รูปโปรไฟล์ขนาด 300px ก็เพียงพอ
-                let w = img.width, h = img.height;
-                if (w > maxW) { h *= maxW / w; w = maxW; }
-                canvas.width = w; canvas.height = h;
-                ctx.drawImage(img, 0, 0, w, h);
-                resolve(canvas.toDataURL('image/jpeg', 0.6)); // บีบอัดเหลือคุณภาพ 60%
-            }
-        }
-    });
-}
-
-// ฟังก์ชันอัปโหลดรูปภาพพร้อม Preview และ Compression
-document.getElementById("avatarInput").addEventListener("change", async function(e){
+// ฟังก์ชันอัปโหลดรูปภาพแบบ Instant Preview
+document.getElementById("avatarInput").addEventListener("change", function(e){
   const file = e.target.files[0];
   if(!file) return;
 
-  // แจ้งเตือนขณะประมวลผล
-  Swal.fire({
-      title: 'กำลังประมวลผลรูปภาพ...',
-      allowOutsideClick: false,
-      didOpen: () => { Swal.showLoading(); }
-  });
-
-  try {
-      const base64Img = await compressAvatar(file);
-      document.getElementById("avatarImg").src = base64Img;
-      
-      currentUser.avatar = base64Img;
-      saveToStorage(true); // เซฟรูป
-      Swal.close();
-  } catch (err) {
-      Swal.fire('เกิดข้อผิดพลาด', 'ไม่สามารถอัปโหลดรูปได้', 'error');
+  // ตรวจสอบขนาดไฟล์ (ไม่ควรเกิน 2MB เพราะ LocalStorage มีจำกัด)
+  if(file.size > 2 * 1024 * 1024) {
+    Swal.fire({ icon: 'error', title: 'ไฟล์ใหญ่เกินไป', text: 'กรุณาเลือกรูปภาพขนาดไม่เกิน 2MB' });
+    return;
   }
+
+  const reader = new FileReader();
+  reader.onload = function(){
+    const base64Img = reader.result;
+    document.getElementById("avatarImg").src = base64Img;
+    
+    // อัปเดตรูปใน currentUser และ Save ทันที
+    currentUser.avatar = base64Img;
+    saveToStorage(true); // เซฟเงียบๆ เฉพาะรูป
+  };
+  reader.readAsDataURL(file);
 });
 
-// บันทึกข้อมูลโปรไฟล์
+// บันทึกข้อมูลทั้งหมด
 function saveProfile(){
   const email = document.getElementById("email").value.trim();
   const address = document.getElementById("address").value.trim();
   
   if(!email) {
-    Swal.fire({ icon: 'warning', title: 'กรุณากรอกอีเมล', background: '#1a1a1a', color: '#fff' });
+    Swal.fire({ icon: 'warning', title: 'กรุณากรอกอีเมล' });
     return;
   }
 
@@ -241,7 +218,7 @@ function saveProfile(){
   Swal.fire({
     icon: 'success',
     title: 'บันทึกสำเร็จ',
-    text: 'อัปเดตข้อมูลโปรไฟล์เรียบร้อยแล้ว',
+    text: 'อัปเดตข้อมูลโปรไฟล์ของคุณเรียบร้อยแล้ว',
     confirmButtonColor: '#e60023',
     background: '#1a1a1a',
     color: '#fff'
@@ -249,8 +226,10 @@ function saveProfile(){
 }
 
 function saveToStorage(isSilent = false) {
+  // 1. อัปเดต currentUser (คนที่ Login อยู่ใน Session ปัจจุบัน)
   localStorage.setItem("currentUser", JSON.stringify(currentUser));
   
+  // 2. อัปเดตใน users (ฐานข้อมูลหลักของระบบ)
   let users = JSON.parse(localStorage.getItem("users")) || [];
   users = users.map(u => {
     if(u.username === currentUser.username) {
@@ -269,11 +248,13 @@ function saveToStorage(isSilent = false) {
 function logout(){
   Swal.fire({
     title: 'ต้องการออกจากระบบ?',
+    text: "คุณต้องเข้าสู่ระบบใหม่อีกครั้งหากต้องการสั่งซื้อสินค้า",
     icon: 'warning',
     showCancelButton: true,
     confirmButtonColor: '#e60023',
     cancelButtonColor: '#333',
     confirmButtonText: 'ใช่, ออกจากระบบ',
+    cancelButtonText: 'ยกเลิก',
     background: '#1a1a1a',
     color: '#fff'
   }).then((result) => {
