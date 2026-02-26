@@ -22,28 +22,14 @@
     nav a{color:#fff;text-decoration:none;font-size:14px;transition:.3s;padding:5px 10px;}
     nav a:hover{color:#e60023}
 
-    /* สไตล์โปรไฟล์ที่ดึงรูปมาโชว์ */
+    /* สไตล์โปรไฟล์ */
     .user-profile-tag {
-        display: none;
-        align-items: center;
-        gap: 10px;
-        background: rgba(255, 255, 255, 0.05);
-        padding: 5px 12px;
-        border-radius: 50px;
-        border: 1px solid #333;
-        color: #fff;
-        cursor: pointer;
-        transition: 0.3s;
+        display: none; align-items: center; gap: 10px; background: rgba(255, 255, 255, 0.05);
+        padding: 5px 12px; border-radius: 50px; border: 1px solid #333; color: #fff; cursor: pointer; transition: 0.3s;
     }
     .user-profile-tag:hover { background: rgba(230, 0, 35, 0.1); border-color: #e60023; }
     
-    .user-avatar-mini {
-        width: 28px;
-        height: 28px;
-        border-radius: 50%;
-        object-fit: cover;
-        border: 1.5px solid #e60023;
-    }
+    .user-avatar-mini { width: 28px; height: 28px; border-radius: 50%; object-fit: cover; border: 1.5px solid #e60023; }
 
     .icon-btn{cursor:pointer;background:#1a1a1a;padding:10px;border-radius:12px;border:1px solid #222;position:relative;transition:.3s;display:flex;align-items:center;justify-content:center;color:white;text-decoration: none;}
     .icon-btn:hover{background:#222;border-color:#e60023}
@@ -80,12 +66,12 @@
         <a href="index.html" style="color:#e60023;">หน้าแรก</a>
         <a href="product.html">สินค้า</a>
         <a href="promotion.html">โปรโมชั่น</a> 
-        <a href="order-history.html" id="orderLink" style="display:none;">ประวัติสั่งซื้อ</a>
+        <a href="orders.html" id="orderLink" style="display:none;">ประวัติสั่งซื้อ</a>
         <a href="contact.html">ติดต่อเรา</a>
         
         <a href="login.html" id="loginLink">เข้าสู่ระบบ</a>
         
-        <div id="userDisplay" class="user-profile-tag" onclick="location.href='profile.html'">
+        <div id="userDisplay" class="user-profile-tag" onclick="location.href='Profile.html'">
             <img id="userAvatarHeader" src="" class="user-avatar-mini" style="display:none;">
             <i id="userDefaultIcon" class="fa-solid fa-circle-user" style="color:#e60023;"></i>
             <span id="userNameText"></span>
@@ -112,15 +98,13 @@
 
 <section class="section">
     <h2><i class="fa-solid fa-fire" style="color:#ffae00;"></i> สินค้าแนะนำ</h2>
-    <div class="grid" id="productGrid">
-        </div>
+    <div class="grid" id="productGrid"></div>
 </section>
 
 <script>
 // เช็คสถานะการเข้าสู่ระบบ
 function checkAuth() {
     const user = JSON.parse(localStorage.getItem("currentUser"));
-    
     if (user) {
         document.getElementById("loginLink").style.display = "none";
         document.getElementById("userDisplay").style.display = "flex";
@@ -130,21 +114,19 @@ function checkAuth() {
 
         const avatarImg = document.getElementById("userAvatarHeader");
         const defaultIcon = document.getElementById("userDefaultIcon");
-        
         if(user.avatar) {
             avatarImg.src = user.avatar;
             avatarImg.style.display = "block";
             defaultIcon.style.display = "none";
         }
 
-        // เช็คสิทธิ์ Admin
         if (user.role === "admin" || user.username.toLowerCase() === "admin") {
             document.getElementById("adminFab").style.display = "flex";
         }
     }
 }
 
-// แสดงสินค้าแนะนำ
+// แสดงสินค้าแนะนำ (8 ชิ้นล่าสุด)
 function renderProducts() {
     const grid = document.getElementById("productGrid");
     const products = JSON.parse(localStorage.getItem('sneaker_prods')) || [];
@@ -154,13 +136,13 @@ function renderProducts() {
         return;
     }
 
-    grid.innerHTML = products.slice(0, 8).map(p => {
-        // รองรับระบบเก่า (img) และระบบใหม่ (images[])
+    // เรียงเอาอันล่าสุดขึ้นก่อน และเลือก 8 ชิ้นแรก
+    grid.innerHTML = products.reverse().slice(0, 8).map(p => {
         const displayImg = (p.images && p.images.length > 0) ? p.images[0] : (p.img || 'https://via.placeholder.com/400');
         
         return `
         <div class="card" onclick="goToDetail('${p.id}')">
-            <img src="${displayImg}" alt="${p.name}">
+            <img src="${displayImg}" alt="${p.name}" onerror="this.src='https://via.placeholder.com/400'">
             <div class="card-body">
                 <h3>${p.name}</h3>
                 <div class="price">฿${Number(p.price).toLocaleString()}</div>
@@ -169,7 +151,6 @@ function renderProducts() {
     }).join('');
 }
 
-// ไปหน้าละเอียดสินค้า
 function goToDetail(id) {
     const products = JSON.parse(localStorage.getItem('sneaker_prods')) || [];
     const found = products.find(item => String(item.id) === String(id));
@@ -179,7 +160,6 @@ function goToDetail(id) {
     }
 }
 
-// ออกจากระบบ
 function handleLogout() {
     Swal.fire({
         title: 'ออกจากระบบ?',
@@ -188,17 +168,15 @@ function handleLogout() {
         confirmButtonColor: '#e60023',
         confirmButtonText: 'ใช่, ออกจากระบบ',
         cancelButtonText: 'ยกเลิก',
-        background: '#1a1a1a',
-        color: '#fff'
+        background: '#1a1a1a', color: '#fff'
     }).then((result) => {
         if (result.isConfirmed) {
             localStorage.removeItem("currentUser");
-            location.reload();
+            window.location.href = "index.html"; // รีเฟรชหน้ากลับมาที่ index
         }
     });
 }
 
-// อัปเดตตัวเลขในตะกร้า
 function updateCart() {
     const cart = JSON.parse(localStorage.getItem("cart")) || [];
     document.getElementById("cartCount").textContent = cart.length;
