@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ประวัติคำสั่งซื้อ | B.Sneakers</title>
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;600&display=swap" rel="stylesheet">
+
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Kanit', sans-serif; }
+  body { background: #0f0f0f; color: #fff; min-height: 100vh; padding-bottom: 50px; }
+
+  header {
+    background: #111; padding: 15px 30px;
+    display: flex; justify-content: space-between; align-items: center;
+    border-bottom: 2px solid #e60023; position: sticky; top: 0; z-index: 1000;
+  }
+  .logo { color: #e60023; font-size: 24px; font-weight: bold; text-decoration: none; letter-spacing: 1px; }
+  .logo span { color: #fff; }
+
+  .container { max-width: 800px; margin: 40px auto; padding: 0 20px; }
+  h1 { font-size: 28px; margin-bottom: 30px; display: flex; align-items: center; gap: 15px; }
+  h1 i { color: #e60023; }
+
+  /* Order Card */
+  .order-card {
+    background: #1a1a1a; border: 1px solid #333; border-radius: 16px;
+    padding: 25px; margin-bottom: 30px; transition: 0.3s;
+    animation: fadeInUp 0.5s ease forwards;
+  }
+  @keyframes fadeInUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+  
+  .order-header {
+    display: flex; justify-content: space-between; align-items: flex-start;
+    border-bottom: 1px solid #333; padding-bottom: 15px; margin-bottom: 20px;
+  }
+  .order-id { font-weight: bold; color: #fff; font-size: 18px; }
+  .order-date { color: #888; font-size: 13px; margin-top: 4px; }
+
+  /* New: Shipping Stepper */
+  .stepper {
+    display: flex; justify-content: space-between; margin-bottom: 25px;
+    position: relative; padding: 0 10px;
+  }
+  .stepper::before {
+    content: ""; position: absolute; top: 15px; left: 40px; right: 40px;
+    height: 2px; background: #333; z-index: 1;
+  }
+  .step {
+    position: relative; z-index: 2; display: flex; flex-direction: column;
+    align-items: center; gap: 8px; flex: 1;
+  }
+  .step-icon {
+    width: 32px; height: 32px; background: #222; border: 2px solid #333;
+    border-radius: 50%; display: flex; align-items: center; justify-content: center;
+    font-size: 12px; color: #555; transition: 0.3s;
+  }
+  .step-text { font-size: 11px; color: #555; font-weight: 500; }
+  
+  /* Step Active Colors */
+  .step.active .step-icon { background: #e60023; border-color: #e60023; color: #fff; box-shadow: 0 0 10px rgba(230,0,35,0.4); }
+  .step.active .step-text { color: #fff; }
+  .step.completed .step-icon { background: #00c853; border-color: #00c853; color: #fff; }
+  .step.completed .step-text { color: #00c853; }
+
+  .item-row {
+    display: flex; align-items: center; gap: 15px; margin-bottom: 12px;
+    background: rgba(255,255,255,0.03); padding: 12px; border-radius: 12px;
+  }
+  .item-img { width: 65px; height: 65px; border-radius: 8px; object-fit: cover; border: 1px solid #333; }
+  .item-details { flex: 1; display: flex; justify-content: space-between; align-items: center; }
+  .item-name { font-weight: 500; font-size: 14px; color: #eee; }
+  .item-info { font-size: 12px; color: #888; margin-top: 3px; }
+
+  .order-footer {
+    display: flex; justify-content: space-between; align-items: center;
+    margin-top: 15px; padding-top: 15px; border-top: 1px dashed #333;
+  }
+  .total-price { font-size: 20px; font-weight: bold; color: #e60023; }
+
+  .tracking-box {
+    background: #000; padding: 15px; border-radius: 12px; margin-top: 15px;
+    display: flex; flex-direction: column; gap: 10px;
+    border-left: 4px solid #3498db; box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+  }
+  .tracking-top { display: flex; justify-content: space-between; align-items: center; }
+  .courier-name { font-size: 12px; color: #3498db; font-weight: bold; text-transform: uppercase; }
+  .tracking-info { font-size: 14px; color: #ccc; }
+  .copy-btn { background: #333; color: #fff; border: none; padding: 6px 12px; border-radius: 6px; cursor: pointer; font-size: 11px; transition: 0.2s; }
+  .copy-btn:hover { background: #e60023; }
+
+  .back-btn {
+    background: #222; color: #fff; border: none; padding: 10px 20px;
+    border-radius: 10px; cursor: pointer; text-decoration: none;
+    display: inline-flex; align-items: center; gap: 8px; font-size: 14px; transition: 0.3s;
+  }
+</style>
+</head>
+
+<body>
+
+<header>
+  <a href="homepage.html" class="logo">B.<span>SNEAKERS</span></a>
+  <a href="homepage.html" class="back-btn"><i class="fa-solid fa-house"></i> กลับสู่หน้าหลัก</a>
+</header>
+
+<div class="container">
+  <h1><i class="fa-solid fa-clock-rotate-left"></i> ประวัติสั่งซื้อ</h1>
+  <div id="orderList"></div>
+</div>
+
+<a href="admin.html" id="adminLink" style="position: fixed; bottom: 30px; right: 30px; background: #ffc107; width: 60px; height: 60px; border-radius: 50%; display: none; align-items: center; justify-content: center; text-decoration: none; z-index: 9999;">
+  <i class="fa-solid fa-user-gear" style="color: #000; font-size: 24px;"></i>
+</a>
+
+<script>
+const currentUser = JSON.parse(localStorage.getItem("currentUser"));
+if(!currentUser) window.location.href = "login.html";
+
+if(currentUser.username === "admin" || currentUser.role === "admin") {
+    document.getElementById("adminLink").style.display = "flex";
+}
+
+function copyTracking(text) {
+    navigator.clipboard.writeText(text);
+    Swal.fire({ toast: true, position: 'top-end', icon: 'success', title: 'คัดลอกเลขพัสดุแล้ว', showConfirmButton: false, timer: 1500 });
+}
+
+function loadOrders() {
+    let allOrders = JSON.parse(localStorage.getItem("orders")) || [];
+    const myOrders = allOrders.filter(o => o.user === currentUser.username).reverse();
+    const container = document.getElementById("orderList");
+
+    if(myOrders.length === 0) {
+        container.innerHTML = `<div style="text-align:center; padding:100px 0; color:#555;"><i class="fa-solid fa-box-open" style="font-size:50px; margin-bottom:15px;"></i><p>ไม่พบประวัติการสั่งซื้อ</p></div>`;
+        return;
+    }
+
+    container.innerHTML = myOrders.map(order => {
+        // คำนวณสถานะสำหรับ Stepper
+        const status = order.status || 'pending';
+        const steps = [
+            { id: 'pending', label: 'รอตรวจ', icon: 'fa-receipt' },
+            { id: 'paid', label: 'จ่ายแล้ว', icon: 'fa-check' },
+            { id: 'shipping', label: 'ส่งแล้ว', icon: 'fa-truck-fast' },
+            { id: 'success', label: 'สำเร็จ', icon: 'fa-house-circle-check' }
+        ];
+
+        let currentIdx = steps.findIndex(s => s.id === status);
+        if(currentIdx === -1) currentIdx = 0;
+
+        const stepperHtml = `
+            <div class="stepper">
+                ${steps.map((s, idx) => `
+                    <div class="step ${idx <= currentIdx ? (idx < currentIdx ? 'completed' : 'active') : ''}">
+                        <div class="step-icon"><i class="fa-solid ${s.icon}"></i></div>
+                        <div class="step-text">${s.label}</div>
+                    </div>
+                `).join('')}
+            </div>
+        `;
+
+        const itemsHtml = (order.items || []).map(it => `
+            <div class="item-row">
+                <img src="${it.img}" class="item-img" onerror="this.src='https://via.placeholder.com/65'">
+                <div class="item-details">
+                    <div>
+                        <div class="item-name">${it.name}</div>
+                        <div class="item-info">ไซส์: ${it.size} | x${it.qty}</div>
+                    </div>
+                    <div style="font-weight:600;">฿${(it.price * it.qty).toLocaleString()}</div>
+                </div>
+            </div>
+        `).join('');
+
+        const trackingHtml = order.tracking ? `
+            <div class="tracking-box">
+                <div class="tracking-top">
+                    <span class="courier-name"><i class="fa-solid fa-box"></i> ${order.courier}</span>
+                    <button class="copy-btn" onclick="copyTracking('${order.tracking}')">คัดลอก</button>
+                </div>
+                <div class="tracking-info">เลขพัสดุ: <strong>${order.tracking}</strong></div>
+            </div>
+        ` : '';
+
+        return `
+            <div class="order-card">
+                <div class="order-header">
+                    <div>
+                        <div class="order-id">ออเดอร์ #${order.orderID.slice(-8)}</div>
+                        <div class="order-date">${order.date}</div>
+                    </div>
+                </div>
+                
+                ${stepperHtml}
+                
+                <div class="item-list">${itemsHtml}</div>
+                ${trackingHtml}
+                
+                <div class="order-footer">
+                    <div style="font-size:12px; color:#888;"><i class="fa-solid fa-wallet"></i> ${order.method === 'cod' ? 'ปลายทาง' : 'โอนเงิน'}</div>
+                    <div style="text-align:right">
+                        <small style="color:#888;">ยอดรวม</small>
+                        <div class="total-price">฿${Number(order.total).toLocaleString()}</div>
+                    </div>
+                </div>
+            </div>
+        `;
+    }).join('');
+}
+
+window.onload = loadOrders;
+</script>
+</body>
+</html>

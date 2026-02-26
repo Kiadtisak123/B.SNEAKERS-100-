@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ชำระเงิน | B.Sneakers</title>
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+<style>
+  /* --- Style เดิมที่คุณออกแบบไว้ --- */
+  body { background:#0f0f0f; color:#fff; font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; margin:0; padding-bottom: 50px; }
+  .container { max-width: 650px; margin: 40px auto; padding: 0 20px; }
+  .card { background:#1a1a1a; padding:30px; border-radius:24px; border:1px solid #222; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
+  h1 { font-size: 28px; margin-bottom: 25px; display: flex; align-items: center; gap: 10px; color: #e60023; }
+  
+  .input-group { margin-bottom: 15px; text-align: left; }
+  label { display: block; margin-bottom: 8px; font-size: 14px; color: #888; }
+  input, textarea, select { width: 100%; padding: 12px 15px; background: #0f0f0f; border: 1px solid #333; border-radius: 12px; color: #fff; font-size: 15px; transition: 0.3s; }
+  input:focus, textarea:focus, select:focus { outline: none; border-color: #e60023; background: #151515; }
+  
+  .order-summary { background: #222; padding: 15px; border-radius: 15px; margin-bottom: 20px; text-align: left; }
+  .item-row { display: flex; justify-content: space-between; font-size: 14px; margin-bottom: 8px; color: #bbb; }
+  
+  .total { font-size: 24px; color: #ffd700; margin: 20px 0; font-weight: bold; border-top: 1px dashed #444; padding-top: 15px; text-align: right; }
+  
+  #qrBox { background: #fff; color: #000; padding: 25px; border-radius: 20px; margin: 20px 0; display: none; text-align: center; }
+  .qr { width: 100%; max-width: 250px; border-radius: 10px; margin: 0 auto 15px; display: block; border: 1px solid #eee; }
+  
+  .bank-info { font-weight: bold; font-size: 16px; margin: 5px 0; color: #333; }
+  .notice { color: #e60023; font-size: 14px; margin-top: 10px; font-weight: bold; }
+  
+  .btn { background: #e60023; border: none; padding: 16px; color: #fff; border-radius: 15px; cursor: pointer; font-size: 18px; width: 100%; font-weight: bold; transition: 0.3s; display: flex; align-items: center; justify-content: center; gap: 10px; }
+  .btn:hover { background: #ff1a3d; transform: translateY(-2px); box-shadow: 0 5px 15px rgba(230,0,35,0.3); }
+  
+  .back-link { display: block; margin-top: 20px; color: #666; text-decoration: none; font-size: 14px; text-align: center; }
+  .back-link:hover { color: #fff; }
+</style>
+</head>
+
+<body>
+
+<div class="container">
+  <div class="card">
+    <h1><i class="fa-solid fa-credit-card"></i> ชำระเงิน</h1>
+
+    <div class="order-summary" id="orderItems"></div>
+
+    <div class="input-group">
+      <label><i class="fa-solid fa-user"></i> ชื่อผู้รับ</label>
+      <input type="text" id="customerName" placeholder="ระบุชื่อ-นามสกุล">
+    </div>
+
+    <div class="input-group">
+      <label><i class="fa-solid fa-phone"></i> เบอร์โทรศัพท์</label>
+      <input type="tel" id="customerTel" placeholder="08X-XXXXXXX">
+    </div>
+
+    <div class="input-group">
+      <label><i class="fa-solid fa-location-dot"></i> ที่อยู่จัดส่ง</label>
+      <textarea id="address" rows="3" placeholder="บ้านเลขที่, ถนน, ตำบล, อำเภอ, จังหวัด, รหัสไปรษณีย์"></textarea>
+    </div>
+
+    <div class="input-group">
+      <label><i class="fa-solid fa-truck"></i> วิธีการชำระเงิน</label>
+      <select id="paymentMethod" onchange="updateTotal(); toggleQR()">
+        <option value="transfer">โอนเงิน (ฟรีค่าธรรมเนียม)</option>
+        <option value="cod">เก็บเงินปลายทาง (+200 บาท)</option>
+      </select>
+    </div>
+
+    <div id="qrBox">
+      <img src="b7bbaa1f-c5b5-45b2-b3d9-d1b276d1c1e2.jpg" class="qr" alt="PromptPay QR">
+      <div class="bank-info">พร้อมเพย์: 080-625-6731</div>
+      <div class="bank-info">กสิกรไทย: 252-0-64761-2</div>
+      <div class="bank-info">ชื่อบัญชี: เกียรติศักดิ์ เกตุสร้อย</div>
+      <div class="notice">📌 โอนเงินแล้ว อย่าลืมแนบสลิปในแชทนะครับ</div>
+    </div>
+
+    <div class="total">ยอดรวมสุทธิ: <span id="finalTotal">0</span> ฿</div>
+
+    <button class="btn" onclick="confirmOrder()">
+      <i class="fa-solid fa-shield-check"></i> ยืนยันและสั่งซื้อ
+    </button>
+
+    <a href="ตระกร้า.html" class="back-link">← กลับไปแก้ไขตะกร้า</a>
+  </div>
+</div>
+
+<script>
+const SHIPPING = 100;
+const COD_EXTRA = 200;
+
+// ดึงรายการที่ลูกค้าเลือกมาจากหน้าตะกร้า
+const fullCart = JSON.parse(localStorage.getItem("cart")) || [];
+const cart = fullCart.filter(item => item.selected !== false);
+
+function renderSummary() {
+  const container = document.getElementById("orderItems");
+  if(cart.length === 0) {
+    container.innerHTML = "<div style='text-align:center;color:#888;'>ไม่มีสินค้าที่เลือกชำระเงิน</div>";
+    return;
+  }
+  let html = "";
+  cart.forEach(item => {
+    html += `<div class="item-row">
+                <span>${item.name} (x${item.qty})</span>
+                <span>฿${(item.price * item.qty).toLocaleString()}</span>
+              </div>`;
+  });
+  html += `<div class="item-row" style="color:#e60023; border-top: 1px solid #333; padding-top: 10px; margin-top: 10px;">
+              <span>ค่าจัดส่ง</span>
+              <span>฿${SHIPPING}</span>
+            </div>`;
+  container.innerHTML = html;
+}
+
+function updateTotal(){
+  let baseTotal = 0;
+  cart.forEach(item => baseTotal += item.price * item.qty);
+  const method = document.getElementById("paymentMethod").value;
+  let total = baseTotal + SHIPPING;
+  if(method === "cod") total += COD_EXTRA;
+  document.getElementById("finalTotal").innerText = total.toLocaleString();
+}
+
+function toggleQR(){
+  const method = document.getElementById("paymentMethod").value;
+  document.getElementById("qrBox").style.display = (method === "transfer") ? "block" : "none";
+}
+
+function confirmOrder(){
+  const name = document.getElementById("customerName").value.trim();
+  const tel = document.getElementById("customerTel").value.trim();
+  const address = document.getElementById("address").value.trim();
+  const method = document.getElementById("paymentMethod").value;
+  const totalText = document.getElementById("finalTotal").innerText;
+  const currentUserRaw = localStorage.getItem("currentUser");
+
+  if(!name || !address || !tel){
+    Swal.fire('ข้อมูลไม่ครบ', 'กรุณากรอกชื่อ เบอร์โทร และที่อยู่จัดส่ง', 'error');
+    return;
+  }
+  
+  const orderID = "BSN-" + Math.floor(Math.random() * 1000000);
+
+  Swal.fire({
+    title: 'ยืนยันการสั่งซื้อ?',
+    text: "เมื่อยืนยัน ระบบจะส่งรายการเข้าสู่แชท Messenger",
+    icon: 'question',
+    showCancelButton: true,
+    confirmButtonColor: '#e60023',
+    confirmButtonText: 'ยืนยันสั่งซื้อ',
+    cancelButtonText: 'แก้ไขข้อมูล',
+    background: '#1a1a1a',
+    color: '#fff'
+  }).then((result) => {
+    if (result.isConfirmed) {
+      
+      // 1. ตัดสต็อกสินค้า (Database Sync)
+      let products = JSON.parse(localStorage.getItem("sneaker_prods")) || [];
+      cart.forEach(cartItem => {
+          let pIndex = products.findIndex(p => p.id == cartItem.id);
+          if(pIndex !== -1) {
+              products[pIndex].stock = Math.max(0, products[pIndex].stock - cartItem.qty);
+          }
+      });
+      localStorage.setItem("sneaker_prods", JSON.stringify(products));
+
+      // 2. บันทึกประวัติการสั่งซื้อลงระบบ (เพื่อให้หน้า Admin และ หน้า Order แสดงผล)
+      let orders = JSON.parse(localStorage.getItem("orders")) || [];
+      const orderData = {
+        orderID,
+        user: currentUserRaw ? JSON.parse(currentUserRaw).username : "Guest",
+        date: new Date().toLocaleString(),
+        name, tel, address, method, 
+        items: cart,
+        total: parseInt(totalText.replace(/,/g,"")),
+        status: 'pending', // สถานะเริ่มต้น: รอตรวจสอบ
+        isRead: false      // แจ้งเตือนใหม่
+      };
+      orders.push(orderData);
+      localStorage.setItem("orders", JSON.stringify(orders));
+
+      // 3. ล้างสินค้าที่ซื้อแล้วออกจากตะกร้า
+      const remainingCart = fullCart.filter(item => item.selected === false);
+      localStorage.setItem("cart", JSON.stringify(remainingCart));
+
+      // 4. ส่งข้อความไป Messenger
+      let itemsText = "";
+      cart.forEach(item => itemsText += `- ${item.name} (${item.size || item.sizes}) x${item.qty}\n`);
+      
+      const message = `🛍️ **คำสั่งซื้อ: ${orderID}**\n\n` +
+                      `👤 ชื่อผู้รับ: ${name} (${tel})\n` +
+                      `📍 ที่อยู่: ${address}\n` +
+                      `📦 รายการ: \n${itemsText}\n` +
+                      `💳 วิธีชำระ: ${method === 'transfer' ? 'โอนเงิน' : 'เก็บเงินปลายทาง'}\n` +
+                      `💰 ยอดสุทธิ: ${totalText} บาท\n\n` +
+                      (method === 'transfer' ? '✅ โอนเงินเรียบร้อยแล้ว' : '✅ รอยืนยันส่งแบบปลายทาง');
+
+      const fbPageID = "102799091274255"; 
+      window.location.href = `https://m.me/${fbPageID}?text=${encodeURIComponent(message)}`;
+    }
+  });
+}
+
+renderSummary();
+updateTotal();
+toggleQR();
+</script>
+
+</body>
+</html>

@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>เข้าสู่ระบบ | B.Sneakers</title>
+
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+
+<style>
+  /* CSS เดิมของคุณ (คงไว้เพื่อความสวยงาม) */
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    background: #0f0f0f;
+    color: #fff;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    background: radial-gradient(circle at center, #1a1a1a 0%, #0f0f0f 100%);
+  }
+  
+  .login-box {
+    background: #1a1a1a;
+    padding: 40px;
+    border-radius: 20px;
+    width: 100%;
+    max-width: 400px;
+    border: 1px solid #333;
+    text-align: center;
+    box-shadow: 0 15px 35px rgba(0,0,0,0.7);
+  }
+
+  .logo {
+    font-size: 28px;
+    font-weight: bold;
+    color: #e60023;
+    margin-bottom: 25px;
+    letter-spacing: 2px;
+  }
+
+  h2 { margin-bottom: 20px; font-weight: 500; font-size: 20px; color: #ccc; }
+
+  input {
+    width: 100%;
+    padding: 14px;
+    margin: 12px 0;
+    border-radius: 12px;
+    border: 1px solid #333;
+    background: #0a0a0a;
+    color: #fff;
+    font-size: 16px;
+    outline: none;
+    transition: 0.3s;
+  }
+
+  input:focus { border-color: #e60023; box-shadow: 0 0 8px rgba(230, 0, 35, 0.2); }
+
+  .btn {
+    width: 100%;
+    padding: 14px;
+    margin-top: 15px;
+    border: none;
+    background: #e60023;
+    color: #fff;
+    border-radius: 12px;
+    cursor: pointer;
+    font-size: 16px;
+    font-weight: bold;
+    transition: 0.3s;
+  }
+
+  .btn:hover { background: #ff1a3d; transform: translateY(-2px); }
+
+  .links { margin-top: 20px; font-size: 14px; color: #888; }
+  a { color: #e60023; text-decoration: none; cursor: pointer; transition: 0.3s; }
+  a:hover { text-decoration: underline; color: #ff1a3d; }
+  
+  .back-home {
+    margin-top: 30px;
+    display: block;
+    color: #555;
+    font-size: 13px;
+    text-decoration: none;
+  }
+</style>
+</head>
+
+<body>
+
+<div class="login-box">
+  <div class="logo">B.SNEAKERS</div>
+  <h2>ยินดีต้อนรับกลับมา</h2>
+
+  <form onsubmit="login(event)">
+    <input type="text" id="user" placeholder="ชื่อผู้ใช้" required>
+    <input type="password" id="pass" placeholder="รหัสผ่าน" required>
+    <button class="btn" type="submit">เข้าสู่ระบบ</button>
+  </form>
+
+  <div class="links">
+    <p><a onclick="startReset()">ลืมรหัสผ่าน?</a></p>
+    <p style="margin-top: 10px;">ยังไม่มีบัญชี? <a href="register.html">สมัครสมาชิกที่นี่</a></p>
+  </div>
+
+  <a href="homepage.html" class="back-home">← กลับไปหน้าหลัก</a>
+</div>
+
+<script>
+/* ===== เปิดใช้งาน EmailJS ===== */
+emailjs.init({
+  publicKey: "tf8DPZts5EhL3KHlb"
+});
+
+/* ===== LOGIN (อัปเดตระบบ Admin Role) ===== */
+function login(e){
+  e.preventDefault();
+
+  const username = document.getElementById("user").value.trim();
+  const password = document.getElementById("pass").value.trim();
+
+  const users = JSON.parse(localStorage.getItem("users")) || [];
+  const found = users.find(u => u.username === username && u.password === password);
+
+  if(found){
+    // บันทึกสถานะผู้ใช้ปัจจุบัน
+    // เพิ่มเงื่อนไข role: 'admin' เพื่อให้หน้าอื่นตรวจสอบได้ง่ายขึ้น
+    localStorage.setItem("currentUser", JSON.stringify({
+      username: found.username,
+      email: found.email,
+      role: found.username === "admin" ? "admin" : "user" 
+    }));
+    
+    Swal.fire({
+      icon: 'success',
+      title: 'เข้าสู่ระบบสำเร็จ',
+      text: found.username === "admin" ? 'ยินดีต้อนรับผู้ดูแลระบบ' : 'ยินดีต้อนรับคุณ ' + username,
+      showConfirmButton: false,
+      timer: 1500
+    }).then(() => {
+      window.location.href = "homepage.html";
+    });
+  } else {
+    Swal.fire({
+      icon: 'error',
+      title: 'ล้มเหลว',
+      text: 'ชื่อผู้ใช้หรือรหัสผ่านไม่ถูกต้อง',
+      confirmButtonColor: '#e60023'
+    });
+  }
+}
+
+/* ===== ฟังก์ชัน Reset Password อื่นๆ ของคุณ (คงไว้ตามเดิม) ===== */
+async function startReset(){
+  const { value: username } = await Swal.fire({
+    title: 'ลืมรหัสผ่าน',
+    input: 'text',
+    inputLabel: 'กรอกชื่อผู้ใช้ของคุณ',
+    inputPlaceholder: 'Username...',
+    showCancelButton: true,
+    confirmButtonColor: '#e60023'
+  });
+  if(!username) return;
+  const users = JSON.parse(localStorage.getItem("users")) || [];
+  const found = users.find(u => u.username === username.trim());
+  if(!found){
+    Swal.fire('ไม่พบชื่อผู้ใช้', '', 'error');
+    return;
+  }
+  const email = found.email;
+  if(!email){
+    Swal.fire('ผิดพลาด', 'บัญชีนี้ไม่ได้ผูกอีเมลไว้', 'warning');
+    return;
+  }
+  const otp = Math.floor(100000 + Math.random() * 900000).toString();
+  localStorage.setItem("resetUser", username);
+  localStorage.setItem("resetOTP", otp);
+  localStorage.setItem("resetExpire", (Date.now() + 5*60*1000).toString());
+
+  Swal.fire({ title: 'กำลังส่ง OTP...', allowOutsideClick: false, didOpen: () => { Swal.showLoading(); } });
+
+  emailjs.send("service_j4ys8un", "template_hjwypf7", {
+    to_email: email,
+    otp_code: otp,
+    shop_name: "B.Sneakers Shop"
+  })
+  .then(()=>{
+    Swal.fire('สำเร็จ', 'ส่ง OTP ไปที่อีเมล ' + email + ' แล้ว', 'success').then(verifyOTP);
+  })
+  .catch(err=>{
+    Swal.fire('ผิดพลาด', 'ส่งอีเมลไม่สำเร็จ', 'error');
+  });
+}
+
+function verifyOTP(){
+  Swal.fire({
+    title: 'ยืนยัน OTP',
+    input: 'text',
+    inputLabel: 'กรอกรหัส 6 หลักจากอีเมล',
+    confirmButtonColor: '#e60023',
+    showCancelButton: true
+  }).then((result) => {
+    if (result.isConfirmed) {
+      const input = result.value;
+      const realOTP = localStorage.getItem("resetOTP");
+      const expire = Number(localStorage.getItem("resetExpire"));
+      if(Date.now() > expire){
+        Swal.fire('OTP หมดอายุ', 'กรุณาขอรหัสใหม่', 'error');
+        return;
+      }
+      if(input !== realOTP){
+        Swal.fire('รหัสไม่ถูกต้อง', '', 'error');
+        return;
+      }
+      setNewPassword();
+    }
+  });
+}
+
+function setNewPassword(){
+  Swal.fire({
+    title: 'ตั้งรหัสผ่านใหม่',
+    input: 'password',
+    inputPlaceholder: 'รหัสผ่านใหม่อย่างน้อย 4 ตัว',
+    confirmButtonColor: '#e60023',
+    showCancelButton: true
+  }).then((result) => {
+    if (result.isConfirmed && result.value.length >= 4) {
+      const newPass = result.value;
+      const username = localStorage.getItem("resetUser");
+      let users = JSON.parse(localStorage.getItem("users")) || [];
+      users = users.map(u => u.username === username ? { ...u, password: newPass } : u);
+      localStorage.setItem("users", JSON.stringify(users));
+      localStorage.removeItem("resetOTP");
+      localStorage.removeItem("resetUser");
+      localStorage.removeItem("resetExpire");
+      Swal.fire('สำเร็จ', 'เปลี่ยนรหัสผ่านเรียบร้อย เข้าสู่ระบบได้เลย', 'success');
+    } else if (result.value) {
+      Swal.fire('รหัสผ่านสั้นเกินไป', '', 'warning');
+    }
+  });
+}
+</script>
+</body>
+</html>

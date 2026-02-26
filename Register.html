@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>สมัครสมาชิก | B.Sneakers</title>
+
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+  body { 
+    background: #0f0f0f; 
+    color: #fff; 
+    display: flex; 
+    flex-direction: column; 
+    min-height: 100vh;
+    background: radial-gradient(circle at center, #1a1a1a 0%, #0f0f0f 100%);
+  }
+  
+  header { 
+    background: #111; 
+    padding: 15px 30px; 
+    border-bottom: 2px solid #e60023; 
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  
+  .logo { font-size: 24px; font-weight: bold; color: #e60023; letter-spacing: 1px; }
+
+  .wrapper { 
+    flex: 1; 
+    display: flex; 
+    justify-content: center; 
+    align-items: center; 
+    padding: 40px 20px; 
+  }
+
+  .register-box { 
+    background: #1a1a1a; 
+    border: 1px solid #333; 
+    border-radius: 20px; 
+    padding: 40px; 
+    width: 100%; 
+    max-width: 420px; 
+    text-align: center;
+    box-shadow: 0 15px 35px rgba(0,0,0,0.7);
+  }
+
+  h2 { margin-bottom: 25px; font-weight: 500; font-size: 24px; color: #fff; }
+
+  form { display: grid; gap: 15px; }
+
+  input { 
+    padding: 14px; 
+    border-radius: 12px; 
+    border: 1px solid #333; 
+    background: #0a0a0a; 
+    color: #fff; 
+    font-size: 16px;
+    outline: none;
+    transition: 0.3s;
+  }
+
+  input:focus { border-color: #e60023; box-shadow: 0 0 8px rgba(230, 0, 35, 0.2); }
+
+  .btn { 
+    background: #e60023; 
+    border: none; 
+    padding: 14px; 
+    color: #fff; 
+    border-radius: 12px; 
+    cursor: pointer; 
+    font-size: 16px; 
+    font-weight: bold;
+    transition: 0.3s;
+    margin-top: 10px;
+  }
+
+  .btn:hover { background: #ff1a3d; transform: translateY(-2px); }
+
+  .link { margin-top: 20px; font-size: 14px; color: #888; }
+  .link a { color: #e60023; text-decoration: none; font-weight: bold; transition: 0.3s; }
+  .link a:hover { color: #ff1a3d; text-decoration: underline; }
+
+  footer { 
+    background: #111; 
+    text-align: center; 
+    padding: 20px; 
+    border-top: 2px solid #e60023; 
+    color: #666; 
+    font-size: 13px;
+  }
+</style>
+</head>
+
+<body>
+
+<header>
+  <div class="logo">B.SNEAKERS</div>
+</header>
+
+<div class="wrapper">
+  <div class="register-box">
+    <h2>สร้างบัญชีใหม่</h2>
+
+    <form onsubmit="register(event)">
+      <input type="text" id="newUser" placeholder="ชื่อผู้ใช้" required>
+      <input type="email" id="newEmail" placeholder="อีเมล" required>
+      <input type="password" id="newPass" placeholder="รหัสผ่าน (อย่างน้อย 4 ตัว)" required>
+      <input type="password" id="confirmPass" placeholder="ยืนยันรหัสผ่าน" required>
+      <button class="btn" type="submit">สมัครสมาชิก</button>
+    </form>
+
+    <div class="link">
+      มีบัญชีอยู่แล้ว? <a href="login.html">เข้าสู่ระบบที่นี่</a>
+    </div>
+  </div>
+</div>
+
+<footer>© 2026 B.Sneakers - Trusted Sneaker Shop</footer>
+
+<script>
+function register(e){
+  e.preventDefault();
+
+  const user = document.getElementById("newUser").value.trim();
+  const email = document.getElementById("newEmail").value.trim();
+  const pass = document.getElementById("newPass").value;
+  const confirm = document.getElementById("confirmPass").value;
+
+  // ตรวจสอบความครบถ้วน
+  if(!user || !email || !pass){
+    Swal.fire('ผิดพลาด', 'กรุณากรอกข้อมูลให้ครบทุกช่อง', 'error');
+    return;
+  }
+
+  // ตรวจสอบความยาวรหัสผ่าน
+  if(pass.length < 4){
+    Swal.fire('รหัสผ่านสั้นไป', 'รหัสผ่านต้องมีอย่างน้อย 4 ตัวอักษร', 'warning');
+    return;
+  }
+
+  // ตรวจสอบการยืนยันรหัสผ่าน
+  if(pass !== confirm){
+    Swal.fire('ไม่ตรงกัน', 'รหัสผ่านและยืนยันรหัสผ่านไม่ตรงกัน', 'error');
+    return;
+  }
+
+  let users = JSON.parse(localStorage.getItem("users")) || [];
+
+  // เช็คชื่อซ้ำ
+  if(users.some(u => u.username === user)){
+    Swal.fire('ชื่อนี้ถูกใช้แล้ว', 'กรุณาใช้ชื่อผู้ใช้อื่น', 'warning');
+    return;
+  }
+
+  // เช็คอีเมลซ้ำ
+  if(users.some(u => u.email === email)){
+    Swal.fire('อีเมลนี้ถูกใช้แล้ว', 'กรุณาใช้อีเมลอื่น', 'warning');
+    return;
+  }
+
+  // บันทึกข้อมูล
+  users.push({
+    username: user,
+    email: email,
+    password: pass
+  });
+
+  localStorage.setItem("users", JSON.stringify(users));
+
+  Swal.fire({
+    icon: 'success',
+    title: 'สมัครสมาชิกสำเร็จ!',
+    text: 'กรุณาเข้าสู่ระบบเพื่อเริ่มใช้งาน',
+    confirmButtonColor: '#e60023'
+  }).then(() => {
+    window.location.href = "login.html";
+  });
+}
+</script>
+
+</body>
+</html>

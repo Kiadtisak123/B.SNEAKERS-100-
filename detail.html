@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>รายละเอียดสินค้า | B.Sneakers</title>
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+<style>
+/* --- CSS คงเดิมตามที่คุณออกแบบไว้ --- */
+*{margin:0;padding:0;box-sizing:border-box;font-family:'Segoe UI', 'Kanit', sans-serif}
+body{background:#0f0f0f;color:#fff}
+header{ display:flex;justify-content:space-between;align-items:center; background:#111;padding:15px 30px;border-bottom:2px solid #e60023; position: sticky; top: 0; z-index: 1000; }
+.logo{color:#e60023;font-size:24px;font-weight:bold; letter-spacing: 1px; text-decoration:none;}
+.logo span { color: #fff; }
+nav{display:flex;gap:25px; align-items: center;}
+nav a{color:#fff;text-decoration:none; font-size: 15px; position: relative; transition: 0.3s;}
+nav a:hover{color:#e60023}
+.cart-nav { display: flex; align-items: center; gap: 8px; position: relative; }
+#cartCount { background: #e60023; color: white; font-size: 11px; padding: 2px 7px; border-radius: 50%; position: absolute; top: -10px; right: -15px; font-weight: bold; border: 2px solid #111;}
+
+.container{ max-width:1100px;margin:auto;padding:40px 20px; display:grid;grid-template-columns:1fr 1fr;gap:40px; }
+@media (max-width: 768px) { .container { grid-template-columns: 1fr; } }
+
+.main-img-wrap{position:relative; overflow: hidden; border-radius: 16px; border: 1px solid #333; background: #1a1a1a; display: flex; align-items: center; justify-content: center; height: 500px;}
+.main-img-wrap img{width:100%; height: 100%; display: block; object-fit: contain; transition: 0.3s;}
+
+.slide{ position:absolute;top:50%;transform:translateY(-50%); background:rgba(0,0,0,0.6);border:none;color:#fff;font-size:20px; padding:12px 16px;cursor:pointer;border-radius:50%; transition: 0.3s; display: none; z-index: 2;}
+.slide:hover { background: #e60023; }
+.slide.left{left:10px}
+.slide.right{right:10px}
+
+.thumb-wrap{display:flex;gap:10px;margin-top:15px;flex-wrap:wrap; justify-content: center;}
+.thumb{width:80px;height:80px;cursor:pointer;border-radius:8px;border:2px solid transparent;object-fit:cover; opacity: 0.5; transition: 0.3s; background: #1a1a1a;}
+.thumb.active, .thumb:hover{border-color:#e60023; opacity: 1}
+
+.price{color:#e60023;font-size:35px;margin:10px 0;font-weight:bold}
+.desc{color:#bbb;margin:15px 0;line-height:1.6; font-size: 16px;}
+.product-size-info { background: #1a1a1a; padding: 18px; border-radius: 12px; border-left: 5px solid #e60023; margin: 25px 0; display: flex; align-items: center; gap: 12px; }
+.product-size-info i { color: #e60023; font-size: 20px; }
+
+.action-btns { display: flex; gap: 12px; margin-top: 25px; }
+.btn{ display: flex; align-items: center; justify-content: center; gap: 10px; background:#e60023; border:none; padding:16px 25px; color:#fff; border-radius:12px; font-size:16px; cursor:pointer; font-weight: bold; flex: 1; transition: 0.3s; text-decoration: none;}
+.btn-outline { background: transparent; border: 2px solid #e60023; color: #e60023; }
+.btn:hover:not(:disabled){background:#ff1a3d; transform: translateY(-3px); box-shadow: 0 5px 15px rgba(230, 0, 35, 0.3);}
+.btn-outline:hover { background: #e60023; color: #fff; }
+.btn:disabled { background: #444; cursor: not-allowed; }
+
+.btn-messenger { background: #0084FF; margin-top: 12px; width: 100%; border: none; }
+.btn-messenger:hover { background: #0066cc; box-shadow: 0 5px 15px rgba(0, 132, 255, 0.3); }
+
+footer{ margin-top:60px;background:#111;text-align:center; padding:40px;border-top:2px solid #e60023;color:#888; }
+</style>
+</head>
+
+<body>
+
+<header>
+  <a href="homepage.html" class="logo">B.<span>SNEAKERS</span></a>
+  <nav>
+    <a href="homepage.html">หน้าแรก</a>
+    <a href="homepage.html#shop">สินค้า</a>
+    <a href="ตระกร้า.html" class="cart-nav">
+      <i class="fa-solid fa-cart-shopping"></i> ตะกร้า
+      <span id="cartCount">0</span>
+    </a>
+  </nav>
+</header>
+
+<div class="container">
+  <div>
+    <div class="main-img-wrap">
+      <button class="slide left" id="prevBtn" onclick="slide(-1)"><i class="fa-solid fa-chevron-left"></i></button>
+      <img id="pImg" src="" alt="Sneaker Image">
+      <button class="slide right" id="nextBtn" onclick="slide(1)"><i class="fa-solid fa-chevron-right"></i></button>
+    </div>
+    <div class="thumb-wrap" id="thumbs"></div>
+  </div>
+
+  <div>
+    <h1 id="pName" style="font-size: 32px;"></h1>
+    <div class="price" id="pPrice"></div>
+
+    <div class="desc">
+      <p style="margin-bottom: 10px;"><i class="fa-solid fa-circle-check" style="color: #2ecc71; margin-right: 8px;"></i> รองเท้ามือสองของแท้ 100% สภาพดีเยี่ยม</p>
+      <p>คัดพิเศษทุกคู่ ทำความสะอาดฆ่าเชื้อพร้อมใช้งาน พร้อมส่งทันทีครับ ภาพถ่ายจากสินค้าจริงทุกมุม มั่นใจได้ในคุณภาพ</p>
+    </div>
+
+    <div class="product-size-info">
+      <i class="fa-solid fa-ruler-combined"></i>
+      <div>ไซส์ของคู่นี้: <b id="displaySize"></b></div>
+    </div>
+
+    <div class="action-btns" id="buySection"></div>
+    
+    <a href="https://m.me/YOUR_PAGE_ID" target="_blank" style="text-decoration:none">
+      <button class="btn btn-messenger">
+        <i class="fa-brands fa-facebook-messenger"></i> สอบถามสถานะสินค้าทาง Messenger
+      </button>
+    </a>
+  </div>
+</div>
+
+<footer>
+  <p>© 2026 B.Sneakers - ร้านรองเท้ามือสองคุณภาพมั่นใจได้</p>
+</footer>
+
+<script>
+// --- 1. เตรียมข้อมูลสินค้า ---
+const product = JSON.parse(localStorage.getItem("selectedProduct"));
+const allProducts = JSON.parse(localStorage.getItem('sneaker_prods')) || [];
+const realTimeProduct = allProducts.find(p => String(p.id) === String(product?.id)) || product;
+
+if (!realTimeProduct) {
+    window.location.href = "homepage.html";
+}
+
+let productImages = [];
+if (realTimeProduct.images && Array.isArray(realTimeProduct.images)) {
+    productImages = realTimeProduct.images.filter(img => img && img !== "");
+} 
+if (productImages.length === 0 && (realTimeProduct.img || realTimeProduct.image)) {
+    productImages = [realTimeProduct.img || realTimeProduct.image];
+}
+
+let currentIndex = 0;
+
+// --- 2. ตรวจสอบสถานะการเข้าสู่ระบบ (หัวใจสำคัญ) ---
+function checkLogin() {
+    const user = JSON.parse(localStorage.getItem("currentUser"));
+    if (!user) {
+        Swal.fire({
+            title: 'กรุณาเข้าสู่ระบบ',
+            text: 'คุณต้องเข้าสู่ระบบก่อนจึงจะดำเนินการสั่งซื้อได้',
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#e60023',
+            cancelButtonColor: '#444',
+            confirmButtonText: 'ไปหน้าเข้าสู่ระบบ',
+            cancelButtonText: 'ดูสินค้าต่อ',
+            background: '#1a1a1a',
+            color: '#fff'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                window.location.href = "login.html";
+            }
+        });
+        return false;
+    }
+    return true;
+}
+
+function initPage() {
+    document.getElementById('pName').textContent = realTimeProduct.name;
+    document.getElementById('pPrice').textContent = "฿" + Number(realTimeProduct.price).toLocaleString();
+    document.getElementById('displaySize').textContent = realTimeProduct.sizes || realTimeProduct.size || 'N/A';
+    document.getElementById('pImg').src = productImages[0] || 'https://via.placeholder.com/500';
+    
+    const thumbsContainer = document.getElementById('thumbs');
+    if (productImages.length > 1) {
+        document.getElementById('prevBtn').style.display = 'block';
+        document.getElementById('nextBtn').style.display = 'block';
+        thumbsContainer.innerHTML = productImages.map((img, i) =>
+            `<img src="${img}" class="thumb ${i === 0 ? 'active' : ''}" onclick="changeImg(${i})" onerror="this.style.display='none'">`
+        ).join("");
+    }
+
+    renderButtons();
+    updateCartBadge();
+}
+
+function renderButtons() {
+    const buySection = document.getElementById('buySection');
+    if (Number(realTimeProduct.stock) <= 0) {
+        buySection.innerHTML = `
+            <button class="btn" style="background:#444" disabled>
+                <i class="fa-solid fa-box-open"></i> สินค้าหมดแล้ว
+            </button>
+        `;
+    } else {
+        buySection.innerHTML = `
+            <button class="btn" onclick="addToCart()">
+                <i class="fa-solid fa-cart-plus"></i> ใส่ตะกร้า
+            </button>
+            <button class="btn btn-outline" onclick="buyNow()">ซื้อเลย</button>
+        `;
+    }
+}
+
+function changeImg(index) {
+    currentIndex = index;
+    document.getElementById('pImg').src = productImages[index];
+    const allThumbs = document.querySelectorAll(".thumb");
+    allThumbs.forEach(t => t.classList.remove("active"));
+    if (allThumbs[index]) allThumbs[index].classList.add("active");
+}
+
+function slide(dir) {
+    currentIndex = (currentIndex + dir + productImages.length) % productImages.length;
+    changeImg(currentIndex);
+}
+
+function updateCartBadge() {
+    const cart = JSON.parse(localStorage.getItem("cart")) || [];
+    const total = cart.reduce((sum, item) => sum + Number(item.qty), 0);
+    document.getElementById('cartCount').textContent = total;
+}
+
+// เพิ่มลงตะกร้าแบบเช็คล็อกอิน
+function addToCart() {
+    if (!checkLogin()) return; // ถ้าไม่ล็อกอิน ให้หยุดทำงานทันที
+
+    let cart = JSON.parse(localStorage.getItem("cart")) || [];
+    let found = cart.find(item => String(item.id) === String(realTimeProduct.id));
+    
+    if (found && found.qty >= Number(realTimeProduct.stock)) {
+        Swal.fire({
+            icon: 'error',
+            title: 'สินค้าไม่เพียงพอ',
+            text: 'คุณเลือกสินค้าเกินจำนวนในสต็อกที่มีอยู่',
+            background: '#1a1a1a',
+            color: '#fff'
+        });
+        return;
+    }
+
+    if (found) {
+        found.qty += 1;
+    } else {
+        cart.push({
+            id: realTimeProduct.id,
+            name: realTimeProduct.name,
+            price: realTimeProduct.price,
+            size: realTimeProduct.sizes || realTimeProduct.size,
+            img: productImages[0],
+            qty: 1
+        });
+    }
+    
+    localStorage.setItem("cart", JSON.stringify(cart));
+    updateCartBadge();
+
+    Swal.fire({
+        title: 'เพิ่มลงตะกร้าแล้ว!',
+        icon: 'success',
+        confirmButtonColor: '#e60023',
+        background: '#1a1a1a',
+        color: '#fff'
+    });
+}
+
+// ซื้อเลยแบบเช็คล็อกอิน
+function buyNow() {
+    if (!checkLogin()) return; // ถ้าไม่ล็อกอิน ให้หยุดทำงานทันที
+
+    if (Number(realTimeProduct.stock) > 0) {
+        const checkoutItem = [{
+            id: realTimeProduct.id,
+            name: realTimeProduct.name,
+            price: realTimeProduct.price,
+            qty: 1,
+            size: realTimeProduct.sizes ? realTimeProduct.sizes.split(',')[0].trim() : (realTimeProduct.size || 'N/A'),
+            img: productImages[0]
+        }];
+
+        localStorage.setItem("checkoutItems", JSON.stringify(checkoutItem));
+        window.location.href = "checkout.html";
+    }
+}
+
+window.onload = initPage;
+</script>
+
+</body>
+</html>

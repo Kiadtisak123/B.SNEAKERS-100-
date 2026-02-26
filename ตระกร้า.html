@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ตะกร้าสินค้า | B.Sneakers</title>
+  
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;600&display=swap" rel="stylesheet">
+
+  <style>
+    /* CSS ส่วนเดิม */
+    * { margin:0; padding:0; box-sizing:border-box; font-family:'Kanit', sans-serif; }
+    body { background:#0f0f0f; color:#fff; padding-bottom: 120px; min-height: 100vh; }
+    
+    /* ปรับปรุงส่วนหัวให้มีปุ่มย้อนกลับ */
+    .container { max-width:800px; margin:20px auto; padding:20px; }
+    .header-box { display: flex; align-items: center; justify-content: space-between; margin-bottom: 25px; }
+    .btn-back { background: #222; color: #fff; border: none; padding: 10px 15px; border-radius: 12px; cursor: pointer; text-decoration: none; font-size: 14px; transition: 0.3s; }
+    .btn-back:hover { background: #333; }
+    
+    h1 { display: flex; align-items: center; gap: 12px; font-size: 24px; color: #fff; margin: 0; }
+    h1 i { color: #e60023; }
+
+    .cart-item { 
+        display:flex; align-items:center; background:#1a1a1a; padding:15px; 
+        border-radius:20px; margin-bottom:15px; border:1px solid #222; gap:12px; 
+    }
+    .cart-left { display:flex; align-items:center; gap:15px; flex: 1; }
+    .cart-left img { width:80px; height: 80px; border-radius:12px; object-fit: cover; background: #000; border: 1px solid #333; }
+    .item-info div { font-weight: bold; font-size: 16px; color: #eee; }
+    .item-info .item-size { color: #e60023; font-size: 12px; background: rgba(230,0,35,0.1); padding: 2px 8px; border-radius: 5px; }
+    .item-price { display: block; margin-top: 5px; font-size: 17px; color: #fff; font-weight: 600; }
+    
+    .qty-box { display:flex; align-items:center; gap:12px; background: #000; padding: 6px 12px; border-radius: 12px; border: 1px solid #333; }
+    .qty-box button { background:transparent; border:none; color:#e60023; width: 28px; cursor:pointer; font-size: 18px; }
+    .remove-btn { background:rgba(255,255,255,0.05); border:none; color:#555; width: 35px; height: 35px; border-radius:10px; cursor:pointer; }
+    
+    /* Bottom Bar */
+    .bottom-bar { position: fixed; bottom: 0; left: 0; right: 0; background: #111; padding: 20px; border-top: 2px solid #e60023; display: flex; justify-content: center; z-index: 1000; }
+    .bottom-content { max-width: 800px; width: 100%; display: flex; justify-content: space-between; align-items: center; }
+    .total-info .amount { font-size: 24px; font-weight: bold; color: #e60023; display: block; }
+    .btn-checkout { background: #e60023; color: #fff; padding: 12px 25px; border: none; border-radius: 12px; cursor: pointer; font-weight: bold; }
+    
+    .empty-cart { text-align:center; padding: 100px 20px; color: #666; }
+    .btn-shop { display: inline-block; margin-top: 20px; background: #e60023; color: #fff; text-decoration: none; padding: 12px 30px; border-radius: 12px; font-weight: bold; }
+  </style>
+</head>
+
+<body>
+
+<div class="container">
+  <div class="header-box">
+    <h1><i class="fa-solid fa-cart-shopping"></i> ตะกร้าของฉัน</h1>
+    <a href="product.html" class="btn-back"><i class="fa-solid fa-chevron-left"></i> เลือกสินค้าเพิ่ม</a>
+  </div>
+  
+  <div id="cartItems"></div>
+</div>
+
+<div class="bottom-bar" id="bottomBar">
+  <div class="bottom-content">
+    <div class="total-info">
+      <span style="color:#888; font-size:14px;">ยอดชำระสุทธิ</span>
+      <span class="amount" id="totalAmount">฿0</span>
+    </div>
+    <div class="actions">
+      <button class="btn-checkout" onclick="checkout()">ซื้อสินค้า <i class="fa-solid fa-chevron-right"></i></button>
+    </div>
+  </div>
+</div>
+
+<script>
+let cart = [];
+
+function initCart() {
+  cart = JSON.parse(localStorage.getItem('cart')) || [];
+  renderCart();
+}
+
+function renderCart() {
+  const box = document.getElementById('cartItems');
+  const totalAmountEl = document.getElementById('totalAmount');
+  const bottomBar = document.getElementById('bottomBar');
+
+  box.innerHTML = '';
+  let total = 0;
+
+  if (cart.length === 0) {
+    box.innerHTML = `
+      <div class="empty-cart">
+        <i class="fa-solid fa-bag-shopping" style="font-size:60px; margin-bottom:15px; color:#222;"></i>
+        <p>ไม่มีสินค้าในตะกร้า</p>
+        <a href="product.html" class="btn-shop">ไปเลือกซื้อสินค้า</a>
+      </div>`;
+    bottomBar.style.display = 'none';
+    return;
+  }
+
+  bottomBar.style.display = 'flex';
+
+  cart.forEach((item, index) => {
+    if (item.selected !== false) total += (Number(item.price) * Number(item.qty));
+
+    let imgShow = item.img || (item.images && item.images[0]) || 'https://via.placeholder.com/100';
+
+    const div = document.createElement('div');
+    div.className = 'cart-item';
+    div.innerHTML = `
+      <input type="checkbox" style="width:20px; height:20px; accent-color:#e60023;" ${item.selected !== false ? "checked" : ""} onchange="toggleSelect(${index}, this.checked)">
+      <div class="cart-left">
+        <img src="${imgShow}" onerror="this.src='https://via.placeholder.com/100'">
+        <div class="item-info">
+          <div>${item.name}</div>
+          <span class="item-size">Size: ${item.size || 'N/A'}</span>
+          <span class="item-price">฿${Number(item.price).toLocaleString()}</span>
+        </div>
+      </div>
+      <div class="qty-box">
+        <button onclick="changeQty(${index}, -1)">−</button>
+        <span>${item.qty}</span>
+        <button onclick="changeQty(${index}, 1)">+</button>
+      </div>
+      <button class="remove-btn" onclick="removeItem(${index})"><i class="fa-solid fa-trash-can"></i></button>
+    `;
+    box.appendChild(div);
+  });
+
+  totalAmountEl.textContent = `฿${total.toLocaleString()}`;
+  localStorage.setItem('cart', JSON.stringify(cart));
+}
+
+function toggleSelect(i, checked) {
+  cart[i].selected = checked;
+  renderCart();
+}
+
+function changeQty(i, n) {
+  if (cart[i].qty + n <= 0) {
+    removeItem(i);
+  } else {
+    cart[i].qty += n;
+    renderCart();
+  }
+}
+
+function removeItem(i) {
+  cart.splice(i, 1);
+  renderCart();
+}
+
+function checkout() {
+  const selectedItems = cart.filter(item => item.selected !== false);
+  if (selectedItems.length === 0) {
+    Swal.fire({ title: 'กรุณาเลือกสินค้า', icon: 'warning', background: '#1a1a1a', color: '#fff' });
+    return;
+  }
+  window.location.href = 'checkout.html';
+}
+
+initCart();
+</script>
+
+</body>
+</html>

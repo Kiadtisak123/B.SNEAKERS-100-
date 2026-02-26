@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ติดต่อเรา | B.Sneakers</title>
+  
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+    body { background: #0f0f0f; color: #fff; }
+
+    /* ===== HEADER ===== */
+    header {
+      background: #111;
+      padding: 15px 30px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 2px solid #e60023;
+      position: sticky; top: 0; z-index: 1000;
+    }
+
+    .logo { font-size: 24px; font-weight: bold; color: #e60023; letter-spacing: 1px; }
+    nav { display: flex; gap: 20px; align-items: center; }
+    nav a { color: #fff; text-decoration: none; font-size: 15px; transition: 0.3s; }
+    nav a:hover { color: #e60023; }
+
+    /* ===== CONTENT ===== */
+    .container {
+      max-width: 800px;
+      margin: auto;
+      padding: 60px 20px;
+      text-align: center;
+    }
+
+    h1 { margin-bottom: 30px; font-size: 36px; text-transform: uppercase; }
+
+    .contact-card {
+      background: #1a1a1a;
+      border: 1px solid #222;
+      border-radius: 20px;
+      padding: 40px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+    }
+
+    .contact-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 30px;
+      text-align: left;
+      margin-bottom: 40px;
+    }
+
+    @media (max-width: 600px) {
+      .contact-grid { grid-template-columns: 1fr; }
+    }
+
+    .info-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 15px;
+    }
+
+    .info-item i {
+      font-size: 20px;
+      color: #e60023;
+      margin-top: 5px;
+    }
+
+    .info-item h3 { font-size: 18px; margin-bottom: 5px; color: #fff; }
+    .info-item p { color: #ccc; font-size: 15px; line-height: 1.6; }
+
+    /* ===== BUTTONS ===== */
+    .btn-group {
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
+    }
+
+    .chat-btn {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      background: #0084ff;
+      color: #fff;
+      padding: 16px;
+      border-radius: 12px;
+      text-decoration: none;
+      font-size: 18px;
+      font-weight: bold;
+      transition: .3s;
+    }
+
+    /* Line Official Color */
+    .chat-btn.line { background: #06C755; }
+
+    .chat-btn:hover {
+      transform: translateY(-3px);
+      filter: brightness(1.1);
+      box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+    }
+
+    footer {
+      background: #111;
+      text-align: center;
+      padding: 40px;
+      border-top: 2px solid #e60023;
+      margin-top: 60px;
+      color: #888;
+    }
+  </style>
+</head>
+
+<body>
+
+<header>
+  <div class="logo">B.SNEAKERS</div>
+  <nav>
+    <a href="homepage.html">หน้าแรก</a>
+    <a href="product.html">สินค้า</a>
+    <a href="ตระกร้า.html">ตะกร้า</a>
+    <a href="contact.html" style="color: #e60023;">ติดต่อเรา</a>
+  </nav>
+</header>
+
+<div class="container">
+  <h1>Contact Us</h1>
+
+  <div class="contact-card">
+    <div class="contact-grid">
+      <div class="info-item">
+        <i class="fa-solid fa-location-dot"></i>
+        <div>
+          <h3>ที่ตั้งร้าน</h3>
+          <p>ร้าน B.Sneakers (โครงการรองเท้ามือสอง)<br>กรุงเทพมหานคร และปริมณฑล</p>
+        </div>
+      </div>
+
+      <div class="info-item">
+        <i class="fa-solid fa-phone"></i>
+        <div>
+          <h3>เบอร์โทรศัพท์</h3>
+          <p>080-625-6731</p>
+        </div>
+      </div>
+
+      <div class="info-item">
+        <i class="fa-solid fa-clock"></i>
+        <div>
+          <h3>เวลาทำการ</h3>
+          <p>เปิดบริการทุกวัน<br>10:00 - 20:00 น.</p>
+        </div>
+      </div>
+
+      <div class="info-item">
+        <i class="fa-solid fa-envelope"></i>
+        <div>
+          <h3>อีเมล</h3>
+          <p>contact@bsneakers.com</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="btn-group">
+      <a href="https://m.me/102799091274255" target="_blank" class="chat-btn">
+        <i class="fa-brands fa-facebook-messenger"></i> แชทผ่าน Facebook Messenger
+      </a>
+      
+      <a href="https://line.me/R/ti/p/@822rlide" target="_blank" class="chat-btn line">
+        <i class="fa-brands fa-line"></i> ติดต่อผ่าน Line: @822rlide
+      </a>
+    </div>
+  </div>
+</div>
+
+<footer>
+  © 2026 B.Sneakers - Trusted Sneaker Shop
+</footer>
+
+</body>
+</html>
