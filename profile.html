@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>โปรไฟล์ | B.Sneakers</title>
+
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+<link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;600&display=swap" rel="stylesheet">
+
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Kanit', sans-serif; }
+  body { background: #0f0f0f; color: #fff; min-height: 100vh; }
+  
+  header {
+    background: #111;
+    padding: 15px 30px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 2px solid #e60023;
+    position: sticky; top: 0; z-index: 1000;
+  }
+  .logo { color: #e60023; font-size: 24px; font-weight: bold; letter-spacing: 1px; text-decoration: none; }
+  .logo span { color: #fff; }
+
+  .container { max-width: 600px; margin: 40px auto; padding: 0 20px; }
+  .profile-box { 
+    background: #1a1a1a; 
+    border-radius: 24px; 
+    padding: 40px; 
+    border: 1px solid #333;
+    box-shadow: 0 15px 35px rgba(0,0,0,0.6);
+  }
+
+  /* Avatar Style */
+  .avatar-section { text-align: center; margin-bottom: 35px; position: relative; }
+  .avatar-wrapper {
+    position: relative;
+    display: inline-block;
+  }
+  .avatar-section img { 
+    width: 140px; 
+    height: 140px; 
+    border-radius: 50%; 
+    border: 4px solid #e60023; 
+    object-fit: cover;
+    background: #222;
+    padding: 3px;
+    box-shadow: 0 0 20px rgba(230,0,35,0.2);
+  }
+  #avatarInput { display: none; }
+  .upload-label {
+    position: absolute;
+    bottom: 5px;
+    right: 5px;
+    background: #e60023;
+    width: 38px;
+    height: 38px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: 0.3s;
+    border: 3px solid #1a1a1a;
+  }
+  .upload-label:hover { transform: scale(1.1); background: #ff1a3d; }
+
+  h2 { margin-bottom: 25px; text-align: center; font-weight: 600; font-size: 24px; }
+  
+  .input-group { margin-bottom: 20px; }
+  label { display: block; margin-bottom: 8px; color: #888; font-size: 14px; font-weight: 400; }
+  
+  input, textarea {
+    width: 100%; padding: 14px; 
+    border-radius: 12px; border: 1px solid #333;
+    background: #0a0a0a; color: #fff; font-size: 16px;
+    transition: 0.3s; outline: none;
+  }
+  input:focus, textarea:focus { border-color: #e60023; background: #000; box-shadow: 0 0 10px rgba(230,0,35,0.1); }
+  input:read-only { background: #111; color: #666; cursor: not-allowed; }
+
+  .btn {
+    width: 100%;
+    background: #e60023; border: none; padding: 15px;
+    border-radius: 12px; color: #fff; cursor: pointer;
+    font-weight: 600; font-size: 16px; transition: 0.3s;
+    display: flex; align-items: center; justify-content: center; gap: 10px;
+  }
+  .btn:hover { background: #ff1a3d; transform: translateY(-2px); box-shadow: 0 5px 15px rgba(230,0,35,0.3); }
+  
+  .btn-group { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-top: 15px; }
+  .btn-secondary { background: #2a2a2a; }
+  .btn-secondary:hover { background: #3a3a3a; box-shadow: 0 5px 15px rgba(0,0,0,0.3); }
+  
+  .btn-logout { 
+    background: transparent; color: #ff4d4d; border: 1px solid rgba(255, 77, 77, 0.3); 
+    margin-top: 25px; 
+  }
+  .btn-logout:hover { background: rgba(255, 77, 77, 0.1); border-color: #ff4d4d; box-shadow: none; }
+
+  .actions { margin-top: 20px; border-top: 1px solid #333; padding-top: 25px; }
+</style>
+</head>
+
+<body>
+
+<header>
+  <a href="index.html" class="logo">B.<span>SNEAKERS</span></a>
+</header>
+
+<div class="container">
+  <div class="profile-box">
+    <div class="avatar-section">
+      <div class="avatar-wrapper">
+        <img id="avatarImg" src="https://cdn-icons-png.flaticon.com/512/149/149071.png">
+        <label for="avatarInput" class="upload-label" title="เปลี่ยนรูปโปรไฟล์">
+          <i class="fa-solid fa-camera"></i>
+        </label>
+        <input type="file" id="avatarInput" accept="image/*">
+      </div>
+    </div>
+
+    <h2>ข้อมูลส่วนตัว</h2>
+    
+    <div class="input-group">
+      <label><i class="fa-solid fa-user"></i> ชื่อผู้ใช้ (เปลี่ยนไม่ได้)</label>
+      <input id="username" readonly>
+    </div>
+    
+    <div class="input-group">
+      <label><i class="fa-solid fa-envelope"></i> อีเมล</label>
+      <input id="email" type="email" placeholder="example@email.com">
+    </div>
+
+    <div class="input-group">
+      <label><i class="fa-solid fa-location-dot"></i> ที่อยู่จัดส่งปัจจุบัน</label>
+      <textarea id="address" rows="3" placeholder="เลขที่บ้าน, หมู่บ้าน/คอนโด, ถนน, ตำบล..."></textarea>
+    </div>
+
+    <button class="btn" onclick="saveProfile()">
+      <i class="fa-solid fa-floppy-disk"></i> บันทึกข้อมูลโปรไฟล์
+    </button>
+
+    <div class="actions">
+      <div class="btn-group">
+        <button class="btn btn-secondary" onclick="location.href='index.html'">
+          <i class="fa-solid fa-house"></i> หน้าหลัก
+        </button>
+        <button class="btn btn-secondary" onclick="location.href='ประวัติสั่งซื้อ.html'">
+          <i class="fa-solid fa-clock-rotate-left"></i> ประวัติสั่งซื้อ
+        </button>
+      </div>
+      <button class="btn btn-logout" onclick="logout()">
+        <i class="fa-solid fa-right-from-bracket"></i> ออกจากระบบ
+      </button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ดึงข้อมูล User ปัจจุบัน
+let currentUser = JSON.parse(localStorage.getItem("currentUser"));
+
+// ถ้าไม่ได้ Login ให้เด้งไปหน้า Login
+if(!currentUser){
+  window.location.href = "login.html";
+}
+
+// แสดงข้อมูลเดิมใน Input
+document.getElementById("username").value = currentUser.username || "";
+document.getElementById("email").value = currentUser.email || "";
+document.getElementById("address").value = currentUser.address || "";
+if(currentUser.avatar) {
+  document.getElementById("avatarImg").src = currentUser.avatar;
+}
+
+// ฟังก์ชันอัปโหลดรูปภาพแบบ Instant Preview
+document.getElementById("avatarInput").addEventListener("change", function(e){
+  const file = e.target.files[0];
+  if(!file) return;
+
+  // ตรวจสอบขนาดไฟล์ (ไม่ควรเกิน 2MB เพราะ LocalStorage มีจำกัด)
+  if(file.size > 2 * 1024 * 1024) {
+    Swal.fire({ icon: 'error', title: 'ไฟล์ใหญ่เกินไป', text: 'กรุณาเลือกรูปภาพขนาดไม่เกิน 2MB' });
+    return;
+  }
+
+  const reader = new FileReader();
+  reader.onload = function(){
+    const base64Img = reader.result;
+    document.getElementById("avatarImg").src = base64Img;
+    
+    // อัปเดตรูปใน currentUser และ Save ทันที
+    currentUser.avatar = base64Img;
+    saveToStorage(true); // เซฟเงียบๆ เฉพาะรูป
+  };
+  reader.readAsDataURL(file);
+});
+
+// บันทึกข้อมูลทั้งหมด
+function saveProfile(){
+  const email = document.getElementById("email").value.trim();
+  const address = document.getElementById("address").value.trim();
+  
+  if(!email) {
+    Swal.fire({ icon: 'warning', title: 'กรุณากรอกอีเมล' });
+    return;
+  }
+
+  currentUser.email = email;
+  currentUser.address = address;
+  
+  saveToStorage();
+  
+  Swal.fire({
+    icon: 'success',
+    title: 'บันทึกสำเร็จ',
+    text: 'อัปเดตข้อมูลโปรไฟล์ของคุณเรียบร้อยแล้ว',
+    confirmButtonColor: '#e60023',
+    background: '#1a1a1a',
+    color: '#fff'
+  });
+}
+
+function saveToStorage(isSilent = false) {
+  // 1. อัปเดต currentUser (คนที่ Login อยู่ใน Session ปัจจุบัน)
+  localStorage.setItem("currentUser", JSON.stringify(currentUser));
+  
+  // 2. อัปเดตใน users (ฐานข้อมูลหลักของระบบ)
+  let users = JSON.parse(localStorage.getItem("users")) || [];
+  users = users.map(u => {
+    if(u.username === currentUser.username) {
+      return { 
+        ...u, 
+        email: currentUser.email, 
+        address: currentUser.address, 
+        avatar: currentUser.avatar 
+      };
+    }
+    return u;
+  });
+  localStorage.setItem("users", JSON.stringify(users));
+}
+
+function logout(){
+  Swal.fire({
+    title: 'ต้องการออกจากระบบ?',
+    text: "คุณต้องเข้าสู่ระบบใหม่อีกครั้งหากต้องการสั่งซื้อสินค้า",
+    icon: 'warning',
+    showCancelButton: true,
+    confirmButtonColor: '#e60023',
+    cancelButtonColor: '#333',
+    confirmButtonText: 'ใช่, ออกจากระบบ',
+    cancelButtonText: 'ยกเลิก',
+    background: '#1a1a1a',
+    color: '#fff'
+  }).then((result) => {
+    if (result.isConfirmed) {
+      localStorage.removeItem("currentUser");
+      window.location.href = "login.html";
+    }
+  });
+}
+</script>
+
+</body>
+</html>
