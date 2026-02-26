@@ -25,24 +25,23 @@
         z-index: 1000;
     }
 
-    .logo { font-size:24px; font-weight:bold; color:#e60023; letter-spacing:1px; text-decoration:none }
+    .logo { font-size:24px; font-weight:bold; color:#e60023; letter-spacing:1px; text-decoration:none; flex-shrink: 0; }
     .logo span { color: #fff; }
 
-    /* ปรับปรุงเมนูนำทางให้รองรับหน้าจอได้ดีขึ้น */
-    nav { display:flex; align-items:center; gap:10px; flex-wrap: wrap; }
-    nav a { color:#fff; text-decoration:none; font-size:14px; transition:.3s; padding:8px 12px; border-radius: 8px; }
-    nav a:hover { color:#e60023; background: rgba(230, 0, 35, 0.05); }
+    /* ปรับแต่ง Container ของเมนู */
+    nav { display:flex; align-items:center; justify-content: flex-end; gap:20px; width: 100%; margin-left: 20px; }
+    
+    /* กลุ่มลิงก์เมนูหลัก */
+    .menu-links { display: flex; align-items: center; gap: 5px; }
+    .menu-links a { color:#fff; text-decoration:none; font-size:14px; transition:.3s; padding:8px 12px; border-radius: 8px; white-space: nowrap; }
+    .menu-links a:hover { color:#e60023; background: rgba(230, 0, 35, 0.05); }
+
+    /* กลุ่มปุ่มฝั่งขวา (User/Cart) */
+    .user-actions { display: flex; align-items: center; gap: 10px; flex-shrink: 0; }
 
     .user-profile-tag {
-        display: none;
-        align-items: center;
-        gap: 10px;
-        background: rgba(255, 255, 255, 0.05);
-        padding: 5px 15px;
-        border-radius: 50px;
-        border: 1px solid #333;
-        cursor: pointer;
-        transition: 0.3s;
+        display: none; align-items: center; gap: 10px; background: rgba(255, 255, 255, 0.05);
+        padding: 5px 15px; border-radius: 50px; border: 1px solid #333; cursor: pointer; transition: 0.3s;
     }
     .user-profile-tag:hover { background: rgba(230, 0, 35, 0.1); border-color: #e60023; }
     
@@ -76,29 +75,33 @@
 
 <header>
     <a href="index.html" class="logo">B.<span>SNEAKERS</span></a>
+    
     <nav id="mainNav">
-        <a href="index.html" style="color:#e60023; font-weight: 600;">หน้าแรก</a>
-        <a href="product.html">สินค้า</a>
-        <a href="promotion.html">โปรโมชั่น</a> 
-        <a href="contact.html">ติดต่อเรา</a>
-        
-        <a href="orders.html" id="orderLink" style="display:none;">ประวัติสั่งซื้อ</a>
-        
-        <a href="login.html" id="loginLink">เข้าสู่ระบบ</a>
-        
-        <div id="userDisplay" class="user-profile-tag" onclick="location.href='profile.html'">
-            <img id="userAvatarHeader" src="" class="user-avatar-mini" style="display:none;">
-            <i id="userDefaultIcon" class="fa-solid fa-circle-user" style="color:#e60023;"></i>
-            <span id="userNameText"></span>
+        <div class="menu-links">
+            <a href="index.html" style="color:#e60023; font-weight: 600;">หน้าแรก</a>
+            <a href="product.html">สินค้า</a>
+            <a href="promotion.html">โปรโมชั่น</a> 
+            <a href="contact.html">ติดต่อเรา</a>
+            <a href="orders.html" id="orderLink" style="display:none;">ประวัติสั่งซื้อ</a>
         </div>
 
-        <a href="ตระกร้า.html" class="icon-btn">
-            <i class="fa-solid fa-cart-shopping"></i>
-            <span id="cartCount">0</span>
-        </a>
-        
-        <div class="icon-btn" id="logoutBtn" onclick="handleLogout()" style="display:none; color: #ff4d4d;">
-            <i class="fa-solid fa-right-from-bracket"></i>
+        <div class="user-actions">
+            <a href="login.html" id="loginLink" style="color:#fff; text-decoration:none; font-size:14px;">เข้าสู่ระบบ</a>
+            
+            <div id="userDisplay" class="user-profile-tag" onclick="location.href='profile.html'">
+                <img id="userAvatarHeader" src="" class="user-avatar-mini" style="display:none;">
+                <i id="userDefaultIcon" class="fa-solid fa-circle-user" style="color:#e60023;"></i>
+                <span id="userNameText"></span>
+            </div>
+
+            <a href="ตระกร้า.html" class="icon-btn">
+                <i class="fa-solid fa-cart-shopping"></i>
+                <span id="cartCount">0</span>
+            </a>
+            
+            <div class="icon-btn" id="logoutBtn" onclick="handleLogout()" style="display:none; color: #ff4d4d;">
+                <i class="fa-solid fa-right-from-bracket"></i>
+            </div>
         </div>
     </nav>
 </header>
