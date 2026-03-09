@@ -28,15 +28,12 @@
     .logo { font-size:24px; font-weight:bold; color:#e60023; letter-spacing:1px; text-decoration:none; flex-shrink: 0; }
     .logo span { color: #fff; }
 
-    /* ปรับแต่ง Container ของเมนู */
     nav { display:flex; align-items:center; justify-content: flex-end; gap:20px; width: 100%; margin-left: 20px; }
     
-    /* กลุ่มลิงก์เมนูหลัก */
     .menu-links { display: flex; align-items: center; gap: 5px; }
     .menu-links a { color:#fff; text-decoration:none; font-size:14px; transition:.3s; padding:8px 12px; border-radius: 8px; white-space: nowrap; }
     .menu-links a:hover { color:#e60023; background: rgba(230, 0, 35, 0.05); }
 
-    /* กลุ่มปุ่มฝั่งขวา (User/Cart) */
     .user-actions { display: flex; align-items: center; gap: 10px; flex-shrink: 0; }
 
     .user-profile-tag {
@@ -120,6 +117,26 @@
 </section>
 
 <script>
+// --- ส่วนข้อมูลเริ่มต้น (ต้องตรงกับหน้า Admin) ---
+const initialProducts = [
+    {
+        id: 1001,
+        name: "Nike Air Jordan 1 Retro Low",
+        price: "4500",
+        sizes: "38,39,40,41,42",
+        stock: 5,
+        images: ["https://images.unsplash.com/photo-1595950653106-6c9ebd614d3a?w=500"]
+    },
+    {
+        id: 1002,
+        name: "Adidas Forum Low White",
+        price: "3200",
+        sizes: "40,41,43",
+        stock: 3,
+        images: ["https://images.unsplash.com/photo-1518002171953-a080ee817e1f?w=500"]
+    }
+];
+
 function checkAuth() {
     const user = JSON.parse(localStorage.getItem("currentUser"));
     if (user) {
@@ -144,14 +161,19 @@ function checkAuth() {
 
 function renderProducts() {
     const grid = document.getElementById("productGrid");
-    const products = JSON.parse(localStorage.getItem('sneaker_prods')) || [];
-    if (products.length === 0) {
-        grid.innerHTML = "<p style='grid-column: 1/-1; text-align:center; color:#666;'>กำลังเตรียมข้อมูลสินค้าใหม่...</p>";
-        return;
+    
+    // ดึงข้อมูลจาก LocalStorage
+    let products = JSON.parse(localStorage.getItem('sneaker_prods'));
+    
+    // ถ้าในเครื่องลูกค้าไม่มีข้อมูลเลย ให้ใช้ข้อมูลเริ่มต้น
+    if (!products || products.length === 0) {
+        products = initialProducts;
+        localStorage.setItem('sneaker_prods', JSON.stringify(products));
     }
+
     grid.innerHTML = products.slice(0, 8).map(p => `
         <div class="card" onclick="goToDetail('${p.id}')">
-            <img src="${(p.images && p.images[0]) || 'https://via.placeholder.com/400'}" alt="${p.name}">
+            <img src="${(p.images && p.images[0]) || (p.img) || 'https://via.placeholder.com/400'}" alt="${p.name}">
             <div class="card-body">
                 <h3>${p.name}</h3>
                 <div class="price">฿${Number(p.price).toLocaleString()}</div>
