@@ -18,7 +18,7 @@
         .menu-item { padding: 12px 15px; color: #aaa; background: none; border: none; width: 100%; text-align: left; cursor: pointer; }
         .menu-item.active { background: var(--primary); color: white; border-radius: 8px; }
         main { margin-left: 260px; padding: 40px; width: calc(100% - 260px); }
-        .card { background: var(--card-bg); border: 1px solid var(--border); border-radius: 12px; margin-top: 20px; }
+        .card { background: var(--card-bg); border: 1px solid var(--border); border-radius: 12px; margin-top: 20px; overflow: hidden; }
         table { width: 100%; border-collapse: collapse; }
         th, td { padding: 15px; border-bottom: 1px solid var(--border); text-align: left; }
         .btn-add { background: var(--primary); color: white; padding: 10px 20px; border: none; border-radius: 6px; cursor: pointer; }
@@ -41,9 +41,9 @@
     </main>
 
     <script>
-        const GOOGLE_SHEET_URL = "ใส่URLที่ได้จากการDeployลงที่นี่"; 
+        // ใส่ URL ที่คุณได้รับจากการ Deploy (ต้องมี /exec ต่อท้าย)
+        const GOOGLE_SHEET_URL = "https://script.google.com/macros/s/AKfycbw9BFnG_IVCN9PIrn4S7csjiVEf3ZuBphdyUjDOGdlmoFieAnZPU5xNCKJNM9wo2UkP/exec"; 
 
-        // 1. ฟังก์ชันดึงข้อมูลมาแสดงผล
         async function loadProducts() {
             try {
                 const res = await fetch(GOOGLE_SHEET_URL + "?sheet=products");
@@ -57,11 +57,10 @@
                     </tr>
                 `).join('');
             } catch (e) {
-                document.getElementById('stockBody').innerHTML = '<tr><td colspan="3" style="color:red;">โหลดข้อมูลไม่สำเร็จ</td></tr>';
+                document.getElementById('stockBody').innerHTML = '<tr><td colspan="3" style="color:red;">โหลดข้อมูลไม่สำเร็จ (ตรวจสอบ URL หรือสิทธิ์การเข้าถึง)</td></tr>';
             }
         }
 
-        // 2. ฟังก์ชันเพิ่มสินค้า
         async function addProduct() {
             let uploadedImages = [];
             let myWidget = cloudinary.createUploadWidget({
@@ -93,15 +92,15 @@
                     });
 
                     if (formValues) {
+                        Swal.fire({ title: 'กำลังบันทึก...', allowOutsideClick: false, didOpen: () => Swal.showLoading() });
                         await fetch(GOOGLE_SHEET_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify(formValues) });
                         Swal.fire('สำเร็จ', 'เพิ่มสินค้าแล้ว', 'success');
-                        loadProducts(); // สั่งโหลดตารางใหม่ทันทีหลังเพิ่มเสร็จ
+                        loadProducts();
                     }
                 }
             });
         }
 
-        // เรียกใช้งานตอนเปิดหน้าเว็บ
         loadProducts();
     </script>
 </body>
