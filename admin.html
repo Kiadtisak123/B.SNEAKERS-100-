@@ -2,32 +2,52 @@
 <html lang="th">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Admin Panel | B.Sneakers</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="https://widget.cloudinary.com/v2.0/global/all.js" type="text/javascript"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;600&display=swap" rel="stylesheet">
     <style>
-        /* (CSS เดิมของคุณยังคงใช้ได้ครับ) */
-        :root { --primary: #e60023; --dark: #0a0a0a; }
-        body { background: var(--dark); color: #fff; padding: 20px; font-family: 'Kanit', sans-serif; }
-        .btn { padding: 10px 20px; background: var(--primary); color: white; border: none; cursor: pointer; border-radius: 5px; }
+        :root { --primary: #e60023; --dark: #0a0a0a; --card-bg: #1a1a1a; --text: #f0f0f0; --border: #333; }
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Kanit', sans-serif; }
+        body { background: var(--dark); color: var(--text); display: flex; min-height: 100vh; }
+        aside { width: 260px; background: #000; border-right: 1px solid var(--border); padding: 20px; position: fixed; height: 100%; }
+        .logo { font-size: 24px; font-weight: bold; color: #fff; margin-bottom: 40px; text-align: center; display: block; }
+        .logo span { color: var(--primary); }
+        .menu-item { padding: 12px 15px; color: #aaa; background: none; border: none; width: 100%; text-align: left; cursor: pointer; }
+        .menu-item.active { background: var(--primary); color: white; border-radius: 8px; }
+        main { margin-left: 260px; padding: 40px; width: calc(100% - 260px); }
+        .card { background: var(--card-bg); border: 1px solid var(--border); border-radius: 12px; margin-top: 20px; }
+        table { width: 100%; border-collapse: collapse; }
+        th, td { padding: 15px; border-bottom: 1px solid var(--border); text-align: left; }
+        .btn-add { background: var(--primary); color: white; padding: 10px 20px; border: none; border-radius: 6px; cursor: pointer; }
     </style>
 </head>
 <body>
-
-    <button class="btn" onclick="addProduct()">เพิ่มสินค้าใหม่</button>
-    <div id="status"></div>
+    <aside>
+        <div class="logo">B.<span>SNEAKERS</span></div>
+        <div class="menu-item active"><i class="fas fa-boxes-stacked"></i> สต็อกสินค้า</div>
+    </aside>
+    <main>
+        <h1>สต็อกสินค้า</h1>
+        <button class="btn-add" onclick="addProduct()"><i class="fas fa-plus"></i> เพิ่มสินค้า</button>
+        <div class="card">
+            <table>
+                <thead><tr><th>ชื่อสินค้า</th><th>ราคา</th><th>สต็อก</th></tr></thead>
+                <tbody id="stockBody"></tbody>
+            </table>
+        </div>
+    </main>
 
     <script>
-        const GOOGLE_SHEET_URL = "https://script.google.com/macros/s/AKfycbylpGWJGupVu4BGwdYY7Riq7HbjxtwQdDDDdE9Q3BfU9PBzl99bfVZDvaBH-3g-yaUM/exec";
+        const GOOGLE_SHEET_URL = "ใส่URLที่ได้จากการDeployลงที่นี่"; 
 
         async function addProduct() {
             let uploadedImages = [];
-            
-            // 1. เปิดหน้าต่างอัปโหลด
             let myWidget = cloudinary.createUploadWidget({
-                cloudName: 'droxgzfpi', // ชื่อ Cloud Name จาก Dashboard ของคุณ
-                uploadPreset: 'my_sneakers', // ชื่อ Upload Preset ที่คุณเพิ่งสร้าง
+                cloudName: 'droxgzfpi',
+                uploadPreset: 'my_sneakers',
                 multiple: true,
                 maxFiles: 4
             }, (error, result) => { 
@@ -38,27 +58,24 @@
 
             myWidget.open();
 
-            // 2. เมื่อปิดหน้าต่างอัปโหลด ให้ถามข้อมูลอื่นๆ
             myWidget.on('close', async () => {
                 if (uploadedImages.length > 0) {
                     const { value: formValues } = await Swal.fire({
-                        title: 'กรอกรายละเอียดสินค้า',
-                        html: '<input id="name" class="swal2-input" placeholder="ชื่อสินค้า"><input id="price" class="swal2-input" placeholder="ราคา"><input id="stock" class="swal2-input" placeholder="สต็อก"><input id="sizes" class="swal2-input" placeholder="ไซส์">',
+                        title: 'กรอกรายละเอียด',
+                        html: '<input id="name" class="swal2-input" placeholder="ชื่อ"><input id="price" class="swal2-input" placeholder="ราคา">',
                         preConfirm: () => ({
                             sheet: "products",
-                            id: Date.now(), // สร้าง ID อัตโนมัติ
                             name: document.getElementById('name').value,
                             price: document.getElementById('price').value,
-                            image_url: uploadedImages.join(','), // รวม URL เป็น string
-                            stock: document.getElementById('stock').value,
-                            sizes: document.getElementById('sizes').value
+                            image_url: uploadedImages.join(','),
+                            stock: 1,
+                            sizes: "40"
                         })
                     });
 
                     if (formValues) {
-                        Swal.fire('กำลังบันทึก...', '', 'info');
                         await fetch(GOOGLE_SHEET_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify(formValues) });
-                        Swal.fire('สำเร็จ', 'เพิ่มสินค้าพร้อมรูปภาพแล้ว', 'success');
+                        Swal.fire('สำเร็จ', 'เพิ่มสินค้าแล้ว', 'success');
                     }
                 }
             });
