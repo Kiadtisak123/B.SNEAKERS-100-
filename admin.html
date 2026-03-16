@@ -39,52 +39,69 @@
             <table><thead><tr><th>รูป</th><th>ชื่อ / ไซส์</th><th>ราคา</th><th>สต็อก</th><th>จัดการ</th></tr></thead><tbody id="stockBody"></tbody></table>
         </div>
     </main>
-    <script>
-        const GOOGLE_SHEET_URL = "ใส่ URL ของคุณที่นี่"; // URL ที่ได้จาก Deploy
-        
-        // 1. โหลดข้อมูลจาก Google Sheets
-        async function loadProducts() {
+<script>
+    // URL ที่ได้จาก Deploy ของคุณ (ตรวจสอบให้ชัวร์ว่าลงท้ายด้วย /exec)
+    const GOOGLE_SHEET_URL = "https://script.google.com/macros/s/AKfycbylpGWJGupVu4BGwdYY7Riq7HbjxtwQdDDDdE9Q3BfU9PBzl99bfVZDvaBH-3g-yaUM/exec";
+    
+    // 1. ฟังก์ชันโหลดข้อมูล (ใส่ ?sheet=products ให้ถูกต้องตาม Apps Script)
+    async function loadProducts() {
+        const body = document.getElementById('stockBody');
+        try {
+            const res = await fetch(GOOGLE_SHEET_URL + "?sheet=products");
+            if (!res.ok) throw new Error("ไม่สามารถเชื่อมต่อ Server ได้");
+            const data = await res.json();
+            render(data);
+        } catch (e) { 
+            console.error("โหลดข้อมูลไม่ได้:", e);
+            body.innerHTML = '<tr><td colspan="5" style="text-align:center; color:red;">เกิดข้อผิดพลาดในการโหลดข้อมูล (ตรวจสอบ Console F12)</td></tr>';
+        }
+    }
+
+    // 2. แสดงผลข้อมูล
+    function render(products) {
+        const body = document.getElementById('stockBody');
+        if (!products || products.length === 0) {
+            body.innerHTML = '<tr><td colspan="5" style="text-align:center;">ยังไม่มีสินค้าในระบบ</td></tr>';
+            return;
+        }
+        body.innerHTML = products.map((p, i) => `
+            <tr>
+                <td><img src="${p.image_url || ''}" class="img-preview" onerror="this.src='https://via.placeholder.com/50'"></td>
+                <td><strong>${p.name || '-'}</strong><br><small>Size: ${p.sizes || '-'}</small></td>
+                <td>฿${Number(p.price || 0).toLocaleString()}</td>
+                <td>${p.stock || 0}</td>
+                <td><button class="btn btn-delete"><i class="fas fa-trash"></i></button></td>
+            </tr>
+        `).join('');
+    }
+
+    // 3. เพิ่มสินค้า
+    async function addProduct() {
+        const { value: formValues } = await Swal.fire({
+            title: 'เพิ่มสินค้าใหม่',
+            html: '<input id="name" class="swal2-input" placeholder="ชื่อสินค้า"><input id="price" class="swal2-input" placeholder="ราคา"><input id="img" class="swal2-input" placeholder="ลิงก์รูป"><input id="stock" class="swal2-input" placeholder="สต็อก"><input id="sizes" class="swal2-input" placeholder="ไซส์">',
+            preConfirm: () => ({
+                sheet: "products",
+                name: document.getElementById('name').value,
+                price: document.getElementById('price').value,
+                image_url: document.getElementById('img').value,
+                stock: document.getElementById('stock').value,
+                sizes: document.getElementById('sizes').value
+            })
+        });
+
+        if (formValues) {
+            Swal.fire({ title: 'กำลังบันทึก...', allowOutsideClick: false, didOpen: () => Swal.showLoading() });
             try {
-                const res = await fetch(GOOGLE_SHEET_URL);
-                const data = await res.json();
-                render(data);
-            } catch (e) { console.error("โหลดข้อมูลไม่ได้", e); }
-        }
-
-        // 2. แสดงผลข้อมูล
-        function render(products) {
-            document.getElementById('stockBody').innerHTML = products.map((p, i) => `
-                <tr>
-                    <td><img src="${p.image_url}" class="img-preview"></td>
-                    <td><strong>${p.name}</strong><br><small>Size: ${p.sizes}</small></td>
-                    <td>฿${Number(p.price).toLocaleString()}</td>
-                    <td>${p.stock}</td>
-                    <td><button class="btn btn-delete"><i class="fas fa-trash"></i></button></td>
-                </tr>
-            `).join('');
-        }
-
-        // 3. เพิ่มสินค้า
-        async function addProduct() {
-            const { value: formValues } = await Swal.fire({
-                title: 'เพิ่มสินค้าใหม่',
-                html: '<input id="name" class="swal2-input" placeholder="ชื่อ"><input id="price" class="swal2-input" placeholder="ราคา"><input id="img" class="swal2-input" placeholder="ลิงก์รูป"><input id="stock" class="swal2-input" placeholder="สต็อก"><input id="sizes" class="swal2-input" placeholder="ไซส์">',
-                preConfirm: () => ({
-                    name: document.getElementById('name').value,
-                    price: document.getElementById('price').value,
-                    image_url: document.getElementById('img').value,
-                    stock: document.getElementById('stock').value,
-                    sizes: document.getElementById('sizes').value
-                })
-            });
-
-            if (formValues) {
                 await fetch(GOOGLE_SHEET_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify(formValues) });
-                Swal.fire('สำเร็จ', 'เพิ่มข้อมูลแล้ว', 'success');
+                Swal.fire('สำเร็จ', 'เพิ่มสินค้าแล้ว', 'success');
                 loadProducts();
+            } catch (e) {
+                Swal.fire('ผิดพลาด', 'ไม่สามารถบันทึกข้อมูลได้', 'error');
             }
         }
-        loadProducts();
-    </script>
+    }
+    loadProducts();
+</script>
 </body>
 </html>
