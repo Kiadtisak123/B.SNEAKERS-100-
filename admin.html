@@ -1,90 +1,61 @@
-<!DOCTYPE html>
-<html lang="th">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admin Panel | B.Sneakers</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;600&display=swap" rel="stylesheet">
-    <style>
-        :root { --primary: #e60023; --dark: #0a0a0a; --card-bg: #1a1a1a; --text: #f0f0f0; --border: #333; }
-        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Kanit', sans-serif; }
-        body { background: var(--dark); color: var(--text); display: flex; min-height: 100vh; }
-        aside { width: 260px; background: #000; border-right: 1px solid var(--border); padding: 20px; position: fixed; height: 100%; z-index: 1000; }
-        .logo { font-size: 24px; font-weight: bold; color: #fff; margin-bottom: 40px; text-align: center; text-decoration: none; display: block; }
-        .logo span { color: var(--primary); }
-        .menu-item { display: flex; align-items: center; gap: 10px; padding: 12px 15px; color: #aaa; text-decoration: none; border-radius: 8px; margin-bottom: 8px; cursor: pointer; border: none; background: none; width: 100%; font-size: 16px; transition: 0.3s; }
-        .menu-item:hover, .menu-item.active { background: var(--primary); color: white; }
-        main { margin-left: 260px; padding: 40px; width: calc(100% - 260px); }
-        .card { background: var(--card-bg); border-radius: 12px; border: 1px solid var(--border); overflow: hidden; margin-top: 20px; }
-        table { width: 100%; border-collapse: collapse; }
-        th { background: #222; padding: 15px; text-align: left; color: #888; font-size: 13px; text-transform: uppercase; }
-        td { padding: 15px; border-bottom: 1px solid var(--border); font-size: 14px; vertical-align: middle; }
-        .btn { padding: 8px 12px; border-radius: 6px; cursor: pointer; border: none; transition: 0.2s; font-size: 13px; display: inline-flex; align-items: center; gap: 5px; color: white; text-decoration: none; }
-        .btn-add { background: var(--primary); }
-        .btn-delete { color: #ff4d4d; background: rgba(255, 77, 77, 0.1); }
-        .img-preview { width: 50px; height: 50px; border-radius: 6px; object-fit: cover; }
-    </style>
-</head>
-<body>
-    <aside>
-        <a href="index.html" class="logo">B.<span>SNEAKERS</span></a>
-        <div class="menu-item active"><i class="fas fa-boxes-stacked"></i> สต็อกสินค้า</div>
-    </aside>
-    <main>
-        <h1>สต็อกสินค้า</h1>
-        <button class="btn btn-add" onclick="addProduct()"><i class="fas fa-plus"></i> เพิ่มสินค้า</button>
-        <div class="card">
-            <table><thead><tr><th>รูป</th><th>ชื่อ / ไซส์</th><th>ราคา</th><th>สต็อก</th><th>จัดการ</th></tr></thead><tbody id="stockBody"></tbody></table>
-        </div>
-    </main>
-    <script>
-        const GOOGLE_SHEET_URL = "ใส่ URL ของคุณที่นี่"; // URL ที่ได้จาก Deploy
-        
-        // 1. โหลดข้อมูลจาก Google Sheets
-        async function loadProducts() {
-            try {
-                const res = await fetch(GOOGLE_SHEET_URL);
-                const data = await res.json();
-                render(data);
-            } catch (e) { console.error("โหลดข้อมูลไม่ได้", e); }
+<script>
+    // URL ที่ได้จาก Deploy
+    const GOOGLE_SHEET_URL = "ใส่ URL ของคุณที่นี่"; 
+    
+    // 1. โหลดข้อมูลจาก Google Sheets (ระบุแท็บ products)
+    async function loadProducts() {
+        try {
+            // เพิ่ม ?sheet=products ต่อท้าย URL เพื่อดึงข้อมูลเฉพาะแท็บสินค้า
+            const res = await fetch(GOOGLE_SHEET_URL + "?sheet=products");
+            const data = await res.json();
+            render(data);
+        } catch (e) { 
+            console.error("โหลดข้อมูลไม่ได้", e); 
+            Swal.fire('ข้อผิดพลาด', 'ไม่สามารถโหลดข้อมูลจาก Google Sheets ได้', 'error');
         }
+    }
 
-        // 2. แสดงผลข้อมูล
-        function render(products) {
-            document.getElementById('stockBody').innerHTML = products.map((p, i) => `
-                <tr>
-                    <td><img src="${p.image_url}" class="img-preview"></td>
-                    <td><strong>${p.name}</strong><br><small>Size: ${p.sizes}</small></td>
-                    <td>฿${Number(p.price).toLocaleString()}</td>
-                    <td>${p.stock}</td>
-                    <td><button class="btn btn-delete"><i class="fas fa-trash"></i></button></td>
-                </tr>
-            `).join('');
-        }
+    // 2. แสดงผลข้อมูล
+    function render(products) {
+        const body = document.getElementById('stockBody');
+        body.innerHTML = products.map((p, i) => `
+            <tr>
+                <td><img src="${p.image_url}" class="img-preview" onerror="this.src='https://via.placeholder.com/50'"></td>
+                <td><strong>${p.name}</strong><br><small>Size: ${p.sizes}</small></td>
+                <td>฿${Number(p.price).toLocaleString()}</td>
+                <td>${p.stock}</td>
+                <td><button class="btn btn-delete" onclick="deleteItem(${i})"><i class="fas fa-trash"></i></button></td>
+            </tr>
+        `).join('');
+    }
 
-        // 3. เพิ่มสินค้า
-        async function addProduct() {
-            const { value: formValues } = await Swal.fire({
-                title: 'เพิ่มสินค้าใหม่',
-                html: '<input id="name" class="swal2-input" placeholder="ชื่อ"><input id="price" class="swal2-input" placeholder="ราคา"><input id="img" class="swal2-input" placeholder="ลิงก์รูป"><input id="stock" class="swal2-input" placeholder="สต็อก"><input id="sizes" class="swal2-input" placeholder="ไซส์">',
-                preConfirm: () => ({
-                    name: document.getElementById('name').value,
-                    price: document.getElementById('price').value,
-                    image_url: document.getElementById('img').value,
-                    stock: document.getElementById('stock').value,
-                    sizes: document.getElementById('sizes').value
-                })
+    // 3. เพิ่มสินค้าใหม่
+    async function addProduct() {
+        const { value: formValues } = await Swal.fire({
+            title: 'เพิ่มสินค้าใหม่',
+            html: '<input id="name" class="swal2-input" placeholder="ชื่อสินค้า"><input id="price" class="swal2-input" placeholder="ราคา"><input id="img" class="swal2-input" placeholder="ลิงก์รูปภาพ"><input id="stock" class="swal2-input" placeholder="จำนวนสต็อก"><input id="sizes" class="swal2-input" placeholder="ไซส์ (เช่น 38,39,40)">',
+            preConfirm: () => ({
+                sheet: "products", // บอก Apps Script ว่าจะเพิ่มลงแท็บไหน
+                name: document.getElementById('name').value,
+                price: document.getElementById('price').value,
+                image_url: document.getElementById('img').value,
+                stock: document.getElementById('stock').value,
+                sizes: document.getElementById('sizes').value
+            })
+        });
+
+        if (formValues) {
+            Swal.fire({ title: 'กำลังบันทึก...', allowOutsideClick: false, didOpen: () => Swal.showLoading() });
+            await fetch(GOOGLE_SHEET_URL, { 
+                method: 'POST', 
+                mode: 'no-cors', 
+                body: JSON.stringify(formValues) 
             });
-
-            if (formValues) {
-                await fetch(GOOGLE_SHEET_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify(formValues) });
-                Swal.fire('สำเร็จ', 'เพิ่มข้อมูลแล้ว', 'success');
-                loadProducts();
-            }
+            Swal.fire('สำเร็จ', 'เพิ่มสินค้าลง Google Sheets แล้ว', 'success');
+            loadProducts();
         }
-        loadProducts();
-    </script>
-</body>
-</html>
+    }
+
+    // เรียกโหลดข้อมูลเมื่อเปิดหน้า
+    loadProducts();
+</script>
