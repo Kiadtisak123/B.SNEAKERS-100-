@@ -49,6 +49,8 @@
                 const res = await fetch(GOOGLE_SHEET_URL + "?sheet=products");
                 const data = await res.json();
                 const tbody = document.getElementById('stockBody');
+                
+                // แก้ไขการแสดงผลเพื่อดึงรูปจาก image_url
                 tbody.innerHTML = data.map(p => `
                     <tr>
                         <td>
@@ -105,7 +107,6 @@
             });
         }
 
-        // เริ่มโหลดข้อมูลเมื่อเปิดหน้าเว็บ
         loadProducts();
     </script>
 </body>
