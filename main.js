@@ -1,13 +1,14 @@
 // main.js
 const API_URL = "https://script.google.com/macros/s/AKfycbylpGWJGupVu4BGwdYY7Riq7HbjxtwQdDDDdE9Q3BfU9PBzl99bfVZDvaBH-3g-yaUM/exec";
 
-// 1. ดึงและแสดงรายการสินค้า
+// 1. ดึงและแสดงรายการสินค้า (แก้ไขตรงนี้เพื่อให้ดึงข้อมูลใหม่ทุกครั้ง)
 async function renderProducts() {
     const grid = document.getElementById("productGrid");
     if (!grid) return;
 
     try {
-        const response = await fetch(API_URL + "?sheet=products");
+        // เพิ่ม ?t=${new Date().getTime()} เพื่อป้องกันการติด Cache ของ Browser
+        const response = await fetch(`${API_URL}?sheet=products&t=${new Date().getTime()}`);
         const products = await response.json();
         
         grid.innerHTML = products.map(p => `
@@ -33,7 +34,6 @@ function checkAdminAccess() {
     const adminFab = document.getElementById('adminFab');
 
     if (adminFab) {
-        // เงื่อนไข: ถ้าล็อกอินและ username คือ 'admin' ให้โชว์ปุ่ม
         if (user && user.role === 'admin') {
             adminFab.style.display = 'flex';
         } else {
