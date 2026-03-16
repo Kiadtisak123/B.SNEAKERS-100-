@@ -41,7 +41,7 @@
     </main>
 
     <script>
-        // ใส่ URL ที่ได้จากขั้นตอนการ Deploy ของคุณที่นี่ (ต้องมี /exec)
+        // URL ของคุณจากการ Deploy
         const GOOGLE_SHEET_URL = "https://script.google.com/macros/s/AKfycbw9BFnG_IVCN9PIrn4S7csjiVEf3ZuBphdyUjDOGdlmoFieAnZPU5xNCKJNM9wo2UkP/exec"; 
 
         async function loadProducts() {
@@ -105,6 +105,7 @@
             });
         }
 
+        // เริ่มโหลดข้อมูลเมื่อเปิดหน้าเว็บ
         loadProducts();
     </script>
 </body>
