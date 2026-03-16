@@ -1,16 +1,14 @@
-// URL สำหรับเชื่อมต่อกับ Google Apps Script ของคุณ
 const API_URL = "https://script.google.com/macros/s/AKfycbylpGWJGupVu4BGwdYY7Riq7HbjxtwQdDDDdE9Q3BfU9PBzl99bfVZDvaBH-3g-yaUM/exec";
 
+// 1. ฟังก์ชันดึงข้อมูลสินค้ามาแสดง
 async function renderProducts() {
     const grid = document.getElementById("productGrid");
     if (!grid) return;
 
     try {
-        // ดึงข้อมูลสินค้าจากแท็บ products ใน Google Sheets
         const response = await fetch(API_URL + "?sheet=products");
         const products = await response.json();
         
-        // วาดสินค้าลงในตาราง
         grid.innerHTML = products.map(p => `
             <div class="card" onclick="goToDetail('${p.id}')">
                 <img src="${p.image_url}" alt="${p.name}" onerror="this.src='https://via.placeholder.com/400?text=No+Image'">
@@ -21,13 +19,53 @@ async function renderProducts() {
                 </div>
             </div>`).join('');
             
-        // เก็บข้อมูลลงในเครื่องเพื่อสำรองไว้
         localStorage.setItem('sneaker_prods', JSON.stringify(products));
     } catch (error) {
         console.error("ดึงข้อมูลไม่สำเร็จ:", error);
-        grid.innerHTML = '<p style="text-align:center; padding:20px;">ไม่สามารถเชื่อมต่อฐานข้อมูลได้ในขณะนี้</p>';
     }
 }
 
-// เรียกใช้ฟังก์ชันทันทีที่โหลดหน้าเว็บ
+// 2. ฟังก์ชันตรวจสอบสิทธิ์แอดมิน (เชื่อมกับ login.html)
+function checkAdminAccess() {
+    // ดึงค่าจากคีย์ currentUser ที่บันทึกไว้ใน login.html
+    const user = JSON.parse(localStorage.getItem('currentUser'));
+    const adminFab = document.getElementById('adminFab');
+
+    if (adminFab) {
+        // ถ้าเป็น admin ให้แสดงปุ่มจัดการระบบ
+        if (user && user.role === 'admin') {
+            adminFab.style.display = 'flex';
+        } else {
+            adminFab.style.display = 'none';
+        }
+    }
+}
+
+// 3. ฟังก์ชันตรวจสอบการล็อกอินทั่วไป
+function checkAuth() {
+    const user = JSON.parse(localStorage.getItem('currentUser'));
+    const loginLink = document.getElementById('loginLink');
+    const userDisplay = document.getElementById('userDisplay');
+    const userNameText = document.getElementById('userNameText');
+    const logoutBtn = document.getElementById('logoutBtn');
+    const orderLink = document.getElementById('orderLink');
+
+    if (user) {
+        if (loginLink) loginLink.style.display = 'none';
+        if (userDisplay) userDisplay.style.display = 'flex';
+        if (userNameText) userNameText.innerText = user.username;
+        if (logoutBtn) logoutBtn.style.display = 'flex';
+        if (orderLink) orderLink.style.display = 'block';
+    }
+}
+
+// 4. ฟังก์ชันออกจากระบบ
+function handleLogout() {
+    localStorage.removeItem('currentUser');
+    window.location.reload();
+}
+
+// เรียกใช้ฟังก์ชันทั้งหมดเมื่อเปิดหน้าเว็บ
 renderProducts();
+checkAuth();
+checkAdminAccess();
