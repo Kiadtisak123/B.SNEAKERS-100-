@@ -41,16 +41,15 @@
     </main>
 
     <script>
-        // URL ของคุณจากการ Deploy
         const GOOGLE_SHEET_URL = "https://script.google.com/macros/s/AKfycbw9BFnG_IVCN9PIrn4S7csjiVEf3ZuBphdyUjDOGdlmoFieAnZPU5xNCKJNM9wo2UkP/exec"; 
 
         async function loadProducts() {
             try {
-                const res = await fetch(GOOGLE_SHEET_URL + "?sheet=products");
+                // เพิ่ม ?t=${new Date().getTime()} เพื่อป้องกัน Cache ของ Browser
+                const res = await fetch(`${GOOGLE_SHEET_URL}?sheet=products&t=${new Date().getTime()}`);
                 const data = await res.json();
                 const tbody = document.getElementById('stockBody');
                 
-                // แก้ไขการแสดงผลเพื่อดึงรูปจาก image_url
                 tbody.innerHTML = data.map(p => `
                     <tr>
                         <td>
@@ -68,40 +67,47 @@
         }
 
         async function addProduct() {
-            let uploadedImages = [];
+            let uploadedImageUrl = "";
             let myWidget = cloudinary.createUploadWidget({
                 cloudName: 'droxgzfpi',
                 uploadPreset: 'my_sneakers',
-                multiple: true,
-                maxFiles: 4
+                multiple: false
             }, (error, result) => { 
                 if (!error && result && result.event === "success") { 
-                    uploadedImages.push(result.info.secure_url);
+                    uploadedImageUrl = result.info.secure_url;
                 }
             });
 
             myWidget.open();
 
             myWidget.on('close', async () => {
-                if (uploadedImages.length > 0) {
+                if (uploadedImageUrl) {
                     const { value: formValues } = await Swal.fire({
-                        title: 'กรอกรายละเอียด',
-                        html: '<input id="name" class="swal2-input" placeholder="ชื่อ"><input id="price" class="swal2-input" placeholder="ราคา">',
+                        title: 'กรอกรายละเอียดสินค้า',
+                        html: '<input id="name" class="swal2-input" placeholder="ชื่อสินค้า"><input id="price" class="swal2-input" placeholder="ราคา">',
+                        confirmButtonText: 'บันทึก',
                         preConfirm: () => ({
                             sheet: "products",
                             name: document.getElementById('name').value,
                             price: document.getElementById('price').value,
-                            image_url: uploadedImages.join(','),
+                            image_url: uploadedImageUrl,
                             stock: 1,
                             sizes: "40"
                         })
                     });
 
-                    if (formValues) {
+                    if (formValues && formValues.name && formValues.price) {
                         Swal.fire({ title: 'กำลังบันทึก...', allowOutsideClick: false, didOpen: () => Swal.showLoading() });
-                        await fetch(GOOGLE_SHEET_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify(formValues) });
-                        Swal.fire('สำเร็จ', 'เพิ่มสินค้าแล้ว', 'success');
-                        loadProducts();
+                        try {
+                            await fetch(GOOGLE_SHEET_URL, {
+                                method: 'POST',
+                                body: JSON.stringify(formValues)
+                            });
+                            Swal.fire('สำเร็จ', 'เพิ่มสินค้าแล้ว', 'success');
+                            loadProducts();
+                        } catch (err) {
+                            Swal.fire('ผิดพลาด', 'ไม่สามารถเชื่อมต่อ Server ได้', 'error');
+                        }
                     }
                 }
             });
