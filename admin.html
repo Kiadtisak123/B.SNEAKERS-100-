@@ -35,7 +35,7 @@
         <div class="card">
             <table>
                 <thead><tr><th>ชื่อสินค้า</th><th>ราคา</th><th>สต็อก</th></tr></thead>
-                <tbody id="stockBody"></tbody>
+                <tbody id="stockBody"><tr><td colspan="3">กำลังโหลดข้อมูล...</td></tr></tbody>
             </table>
         </div>
     </main>
@@ -43,6 +43,25 @@
     <script>
         const GOOGLE_SHEET_URL = "ใส่URLที่ได้จากการDeployลงที่นี่"; 
 
+        // 1. ฟังก์ชันดึงข้อมูลมาแสดงผล
+        async function loadProducts() {
+            try {
+                const res = await fetch(GOOGLE_SHEET_URL + "?sheet=products");
+                const data = await res.json();
+                const tbody = document.getElementById('stockBody');
+                tbody.innerHTML = data.map(p => `
+                    <tr>
+                        <td>${p.name || '-'}</td>
+                        <td>${p.price || '0'}</td>
+                        <td>${p.stock || '0'}</td>
+                    </tr>
+                `).join('');
+            } catch (e) {
+                document.getElementById('stockBody').innerHTML = '<tr><td colspan="3" style="color:red;">โหลดข้อมูลไม่สำเร็จ</td></tr>';
+            }
+        }
+
+        // 2. ฟังก์ชันเพิ่มสินค้า
         async function addProduct() {
             let uploadedImages = [];
             let myWidget = cloudinary.createUploadWidget({
@@ -76,10 +95,14 @@
                     if (formValues) {
                         await fetch(GOOGLE_SHEET_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify(formValues) });
                         Swal.fire('สำเร็จ', 'เพิ่มสินค้าแล้ว', 'success');
+                        loadProducts(); // สั่งโหลดตารางใหม่ทันทีหลังเพิ่มเสร็จ
                     }
                 }
             });
         }
+
+        // เรียกใช้งานตอนเปิดหน้าเว็บ
+        loadProducts();
     </script>
 </body>
 </html>
