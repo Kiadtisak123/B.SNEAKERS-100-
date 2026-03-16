@@ -1,6 +1,7 @@
+// main.js
 const API_URL = "https://script.google.com/macros/s/AKfycbylpGWJGupVu4BGwdYY7Riq7HbjxtwQdDDDdE9Q3BfU9PBzl99bfVZDvaBH-3g-yaUM/exec";
 
-// 1. ฟังก์ชันดึงข้อมูลสินค้ามาแสดง
+// 1. ดึงและแสดงรายการสินค้า
 async function renderProducts() {
     const grid = document.getElementById("productGrid");
     if (!grid) return;
@@ -10,7 +11,7 @@ async function renderProducts() {
         const products = await response.json();
         
         grid.innerHTML = products.map(p => `
-            <div class="card" onclick="goToDetail('${p.id}')">
+            <div class="card">
                 <img src="${p.image_url}" alt="${p.name}" onerror="this.src='https://via.placeholder.com/400?text=No+Image'">
                 <div class="card-body">
                     <h3>${p.name}</h3>
@@ -22,17 +23,17 @@ async function renderProducts() {
         localStorage.setItem('sneaker_prods', JSON.stringify(products));
     } catch (error) {
         console.error("ดึงข้อมูลไม่สำเร็จ:", error);
+        grid.innerHTML = '<p style="text-align:center; padding:20px;">ไม่สามารถโหลดสินค้าได้ในขณะนี้</p>';
     }
 }
 
-// 2. ฟังก์ชันตรวจสอบสิทธิ์แอดมิน (เชื่อมกับ login.html)
+// 2. เช็คสิทธิ์และแสดงปุ่มแอดมิน
 function checkAdminAccess() {
-    // ดึงค่าจากคีย์ currentUser ที่บันทึกไว้ใน login.html
     const user = JSON.parse(localStorage.getItem('currentUser'));
     const adminFab = document.getElementById('adminFab');
 
     if (adminFab) {
-        // ถ้าเป็น admin ให้แสดงปุ่มจัดการระบบ
+        // เงื่อนไข: ถ้าล็อกอินและ username คือ 'admin' ให้โชว์ปุ่ม
         if (user && user.role === 'admin') {
             adminFab.style.display = 'flex';
         } else {
@@ -41,7 +42,7 @@ function checkAdminAccess() {
     }
 }
 
-// 3. ฟังก์ชันตรวจสอบการล็อกอินทั่วไป
+// 3. ตรวจสอบสถานะการเข้าสู่ระบบทั่วไป
 function checkAuth() {
     const user = JSON.parse(localStorage.getItem('currentUser'));
     const loginLink = document.getElementById('loginLink');
@@ -59,13 +60,13 @@ function checkAuth() {
     }
 }
 
-// 4. ฟังก์ชันออกจากระบบ
+// 4. ออกจากระบบ
 function handleLogout() {
     localStorage.removeItem('currentUser');
-    window.location.reload();
+    window.location.href = "index.html";
 }
 
-// เรียกใช้ฟังก์ชันทั้งหมดเมื่อเปิดหน้าเว็บ
+// เรียกใช้ฟังก์ชันทันที
 renderProducts();
 checkAuth();
 checkAdminAccess();
