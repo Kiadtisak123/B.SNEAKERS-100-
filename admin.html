@@ -42,28 +42,33 @@
     </main>
 
     <script>
-        const GOOGLE_SHEET_URL = "https://script.google.com/macros/s/AKfycbyNrYbGnEsbklqG5kdHiCWXsdqTfhSyQZQnKSe-ztAAIMIPOzahb7f5If7-VXgekFx7/exec";
+    const GOOGLE_SHEET_URL = "https://script.google.com/macros/s/AKfycbyNrYbGnEsbklqG5kdHiCWXsdqTfhSyQZQnKSe-ztAAIMIPOzahb7f5If7-VXgekFx7/exec";
 
-        async function loadProducts() {
-            try {
-                const res = await fetch(`${GOOGLE_SHEET_URL}?t=${new Date().getTime()}`);
-                const data = await res.json();
-                const tbody = document.getElementById('stockBody');
-                tbody.innerHTML = data.map(p => `
-                    <tr>
-                        <td>
-                            <img src="${p.image_url ? p.image_url.split(',')[0] : 'https://via.placeholder.com/50'}" style="width:50px; height:50px; object-fit:cover; border-radius:4px; margin-right:10px;">
+    async function loadProducts() {
+        try {
+            const res = await fetch(`${GOOGLE_SHEET_URL}?t=${new Date().getTime()}`);
+            const data = await res.json();
+            const tbody = document.getElementById('stockBody');
+            
+            tbody.innerHTML = data.map(p => `
+                <tr>
+                    <td>
+                        <div style="display:flex; align-items:center; gap:10px;">
+                            <img src="${p.image_url ? p.image_url.split(',')[0] : 'https://via.placeholder.com/50'}" 
+                                 onerror="this.src='https://via.placeholder.com/50'"
+                                 style="width:50px; height:50px; object-fit:cover; border-radius:4px;">
                             ${p.name || '-'}
-                        </td>
-                        <td>฿${Number(p.price || 0).toLocaleString()}</td>
-                        <td>${p.stock || 0}</td>
-                    </tr>
-                `).join('');
-            } catch (e) {
-                document.getElementById('stockBody').innerHTML = '<tr><td colspan="3" style="color:red;">โหลดไม่สำเร็จ เช็คการ Deploy ใน Script</td></tr>';
-            }
+                        </div>
+                    </td>
+                    <td>฿${Number(String(p.price).replace(/[^0-9.]/g, '') || 0).toLocaleString()}</td>
+                    <td>${p.stock || 0}</td>
+                </tr>
+            `).join('');
+        } catch (e) {
+            document.getElementById('stockBody').innerHTML = '<tr><td colspan="3" style="color:red; text-align:center;">โหลดข้อมูลสต็อกไม่สำเร็จ</td></tr>';
         }
-        loadProducts();
-    </script>
+    }
+    loadProducts();
+</script>
 </body>
 </html>
