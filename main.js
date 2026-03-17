@@ -1,4 +1,4 @@
-const API_URL = "https://script.google.com/macros/s/AKfycbyNrYbGnEsbklqG5kdHiCWXsdqTfhSyQZQnKSe-ztAAIMIPOzahb7f5If7-VXgekFx7/exec";
+const API_URL = "https://script.google.com/macros/s/AKfycbzZXAHi-99hEgq4U0KTFf5vYCRbGjLGnpcDSBhzRKjKdYf-qScbZMnGQRNtHUJb2EpC/exec";
 
 // ดึงข้อมูลสินค้ามาแสดงผล
 async function renderProducts() {
