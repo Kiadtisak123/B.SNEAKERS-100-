@@ -50,41 +50,44 @@
 </div>
 
 <script>
-// ฟังก์ชันสร้างไอดีแอดมิน (รันทุกครั้งที่เปิดหน้าถ้ายังไม่มีข้อมูล)
-function initAdmin() {
-    const users = JSON.parse(localStorage.getItem("users")) || [];
-    const adminExists = users.some(u => u.username === "admin");
+/* ===== ตั้งค่าเริ่มต้นและแก้ปัญหารหัสผ่านรั่วไหล ===== */
+function setupAdmin() {
+    let users = JSON.parse(localStorage.getItem("users")) || [];
+    // กรองเอาเฉพาะ User ที่รหัสผ่านปลอดภัย (ไม่ใช่ 123)
+    const secureUsers = users.filter(u => u.password !== "123");
     
-    if (!adminExists) {
-        users.push({
+    // ถ้ายังไม่มี Admin ที่ปลอดภัย ให้สร้างใหม่
+    if (!secureUsers.some(u => u.username === "admin")) {
+        secureUsers.push({
             username: "admin",
-            password: "123",
-            role: "admin",
-            email: "admin@bsneakers.com"
+            password: "B-Sneaker@Secure2026", // รหัสผ่านใหม่ที่ปลอดภัย
+            email: "admin@bsneakers.com",
+            role: "admin"
         });
-        localStorage.setItem("users", JSON.stringify(users));
+        localStorage.setItem("users", JSON.stringify(secureUsers));
     }
 }
-initAdmin();
+setupAdmin();
 
-function login(e) {
+/* ===== ระบบ Login ===== */
+function login(e){
     e.preventDefault();
     const username = document.getElementById("user").value.trim();
     const password = document.getElementById("pass").value.trim();
     const users = JSON.parse(localStorage.getItem("users")) || [];
-
+    
     const found = users.find(u => u.username === username && u.password === password);
 
-    if (found) {
+    if(found){
         localStorage.setItem("currentUser", JSON.stringify({
             username: found.username,
-            role: found.role || (found.username === "admin" ? "admin" : "user")
+            role: found.role
         }));
-
+        
         Swal.fire({
             icon: 'success',
             title: 'เข้าสู่ระบบสำเร็จ',
-            text: 'กำลังพาคุณไปหน้าหลัก...',
+            text: 'ยินดีต้อนรับคุณ ' + username,
             timer: 1500,
             showConfirmButton: false,
             background: '#1a1a1a',
@@ -95,7 +98,7 @@ function login(e) {
     } else {
         Swal.fire({ 
             icon: 'error', 
-            title: 'ผิดพลาด', 
+            title: 'เข้าสู่ระบบไม่สำเร็จ',
             text: 'ชื่อผู้ใช้หรือรหัสผ่านไม่ถูกต้อง',
             background: '#1a1a1a',
             color: '#fff'
