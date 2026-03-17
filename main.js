@@ -1,55 +1,70 @@
-const API_URL = "https://script.google.com/macros/s/AKfycbzZXAHi-99hEgq4U0KTFf5vYCRbGjLGnpcDSBhzRKjKdYf-qScbZMnGQRNtHUJb2EpC/exec";
+// 1. วาง URL ใหม่ที่คุณเพิ่งได้มาตรงนี้
+const API_URL = "https://script.google.com/macros/s/AKfycbw07BKvP6A1uBA2HOx46RGxppbGQBrIr-qNnDrtEdqF2o0LC2rM_biPBjlp9WrxptQw/exec";
 
-// ดึงข้อมูลสินค้ามาแสดงผล
+// 2. ฟังก์ชันดึงสินค้า (เพิ่มระบบป้องกัน Cache เพื่อให้สินค้าใหม่ขึ้นทันที)
 async function renderProducts() {
     const grid = document.getElementById("productGrid");
     if (!grid) return;
 
     try {
+        // เพิ่ม ?t=... เพื่อให้บราวเซอร์โหลดข้อมูลสดใหม่เสมอ ไม่จำค่าเก่า
         const response = await fetch(`${API_URL}?t=${new Date().getTime()}`);
         const products = await response.json();
         
         if (!products || products.length === 0) {
-            grid.innerHTML = '<p style="text-align:center; padding:40px; width:100%;">ยังไม่มีสินค้าในสต็อก</p>';
+            grid.innerHTML = '<p style="text-align:center; padding:20px; width:100%;">ไม่พบข้อมูลสินค้าในระบบ</p>';
             return;
         }
 
         grid.innerHTML = products.map(p => {
+            // จัดการเรื่องรูปภาพ (ใช้รูปแรกถ้ามีหลายรูป)
             const displayImg = p.image_url ? p.image_url.split(',')[0].trim() : 'https://via.placeholder.com/400?text=No+Image';
-            const price = Number(String(p.price).replace(/[^0-9.]/g, '')).toLocaleString();
+            
+            // จัดการเรื่องราคา
+            const rawPrice = String(p.price || '0').replace(/[^0-9.]/g, '');
+            const formattedPrice = Number(rawPrice).toLocaleString();
 
             return `
             <div class="card">
-                <img src="${displayImg}" alt="${p.name}" onerror="this.src='https://via.placeholder.com/400?text=Image+Error'">
+                <div class="card-img-container" style="position:relative; width:100%; padding-top:100%; background:#222;">
+                    <img src="${displayImg}" 
+                         alt="${p.name}" 
+                         onerror="this.src='https://via.placeholder.com/400?text=Image+Error'"
+                         style="position:absolute; top:0; left:0; width:100%; height:100%; object-fit:cover;">
+                </div>
                 <div class="card-body">
-                    <h3 style="font-size:18px; margin-bottom:8px;">${p.name || 'สินค้าไม่มีชื่อ'}</h3>
-                    <p style="color:#888; font-size:13px; margin-bottom:12px;">ไซส์: ${p.sizes || '-'} | เหลือ: ${p.stock || 0}</p>
-                    <div class="price" style="color:#e60023; font-size:22px; font-weight:bold;">฿${price}</div>
+                    <h3 style="margin-bottom:10px; font-size:18px;">${p.name || 'ไม่มีชื่อสินค้า'}</h3>
+                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px; color:#888; font-size:12px;">
+                        <span>Size: ${p.sizes || '-'}</span>
+                        <span>Stock: ${p.stock || 0}</span>
+                    </div>
+                    <div class="price" style="color:#e60023; font-size:22px; font-weight:bold;">฿${formattedPrice}</div>
                 </div>
             </div>`;
         }).join('');
-    } catch (err) {
-        grid.innerHTML = '<p style="text-align:center; color:red; width:100%;">เกิดข้อผิดพลาดในการโหลดข้อมูล</p>';
+    } catch (error) {
+        console.error("Error fetching products:", error);
+        grid.innerHTML = '<p style="text-align:center; padding:20px; color:red; width:100%;">โหลดข้อมูลไม่สำเร็จ (ตรวจสอบการตั้งค่า API)</p>';
     }
 }
 
-// เช็คสถานะการเข้าสู่ระบบ
+// 3. ฟังก์ชันเช็คสถานะการล็อกอิน
 function checkAuth() {
     const user = JSON.parse(localStorage.getItem("currentUser"));
-    const elements = {
-        login: document.getElementById('loginLink'),
-        display: document.getElementById('userDisplay'),
-        name: document.getElementById('userNameText'),
-        logout: document.getElementById('logoutBtn'),
-        admin: document.getElementById('adminFab')
-    };
+    const adminFab = document.getElementById('adminFab');
+    const loginLink = document.getElementById('loginLink');
+    const userDisplay = document.getElementById('userDisplay');
+    const logoutBtn = document.getElementById('logoutBtn');
 
     if (user) {
-        if (elements.login) elements.login.style.display = 'none';
-        if (elements.display) elements.display.style.display = 'flex';
-        if (elements.name) elements.name.innerText = user.username;
-        if (elements.logout) elements.logout.style.display = 'flex';
-        if (elements.admin && user.role === 'admin') elements.admin.style.display = 'flex';
+        if (loginLink) loginLink.style.display = 'none';
+        if (userDisplay) {
+            userDisplay.style.display = 'flex';
+            document.getElementById('userNameText').innerText = user.username;
+        }
+        if (logoutBtn) logoutBtn.style.display = 'flex';
+        // แสดงปุ่มแอดมินถ้าเป็น admin
+        if (adminFab && user.role === 'admin') adminFab.style.display = 'flex';
     }
 }
 
@@ -58,7 +73,7 @@ function handleLogout() {
     location.reload();
 }
 
-// รันเมื่อโหลดหน้าเว็บสำเร็จ
+// เรียกใช้งานเมื่อหน้าเว็บโหลดเสร็จ
 document.addEventListener("DOMContentLoaded", () => {
     renderProducts();
     checkAuth();
