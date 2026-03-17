@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Admin Panel | B.Sneakers</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;600&display=swap" rel="stylesheet">
     <style>
         :root { --primary: #e60023; --dark: #0a0a0a; --card-bg: #1a1a1a; --text: #f0f0f0; --border: #333; }
@@ -16,15 +15,11 @@
         .logo span { color: var(--primary); }
         .menu-item { padding: 12px 15px; color: #aaa; background: none; border: none; width: 100%; text-align: left; cursor: pointer; display: block; text-decoration: none; margin-bottom: 10px; }
         .menu-item.active { background: var(--primary); color: white; border-radius: 8px; }
-        .menu-item:hover { color: #fff; }
         main { margin-left: 260px; padding: 40px; width: calc(100% - 260px); }
         .card { background: var(--card-bg); border: 1px solid var(--border); border-radius: 12px; margin-top: 20px; overflow: hidden; }
         table { width: 100%; border-collapse: collapse; }
         th, td { padding: 15px; border-bottom: 1px solid var(--border); text-align: left; vertical-align: middle; }
-        th { background: #222; color: var(--primary); }
-        .btn-appsheet { background: #2196F3; color: white; padding: 10px 20px; border: none; border-radius: 6px; cursor: pointer; text-decoration: none; display: inline-block; margin-bottom: 20px; font-size: 14px; }
-        .btn-appsheet:hover { background: #1976D2; }
-        .status-tag { padding: 4px 8px; border-radius: 4px; font-size: 12px; background: #333; }
+        .btn-appsheet { background: #2196F3; color: white; padding: 10px 20px; border: none; border-radius: 6px; cursor: pointer; text-decoration: none; display: inline-block; margin-bottom: 20px; }
     </style>
 </head>
 <body>
@@ -35,77 +30,40 @@
     </aside>
     <main>
         <h1>จัดการสต็อกสินค้า</h1>
-        <p style="margin-bottom: 15px; color: #aaa;">เพิ่มหรือแก้ไขสินค้าผ่านระบบ AppSheet เพื่อความปลอดภัย</p>
-        
-        <a href="https://www.appsheet.com/start/YOUR-APP-ID" target="_blank" class="btn-appsheet">
-            <i class="fas fa-external-link-alt"></i> เปิด AppSheet เพื่อจัดการข้อมูล
+        <a href="https://www.appsheet.com/start/f5866160-7c2a-436e-9382-7f2864696111" target="_blank" class="btn-appsheet">
+            <i class="fas fa-external-link-alt"></i> เปิด AppSheet เพื่อเพิ่ม/แก้ไขสินค้า
         </a>
-
         <div class="card">
             <table>
-                <thead>
-                    <tr>
-                        <th>สินค้า</th>
-                        <th>ราคา</th>
-                        <th>คงเหลือ</th>
-                        <th>สถานะ</th>
-                    </tr>
-                </thead>
-                <tbody id="stockBody">
-                    <tr><td colspan="4" style="text-align:center;">กำลังดึงข้อมูลล่าสุดจาก Google Sheets...</td></tr>
-                </tbody>
+                <thead><tr><th>สินค้า</th><th>ราคา</th><th>สต็อก</th></tr></thead>
+                <tbody id="stockBody"><tr><td colspan="3">กำลังโหลดข้อมูล...</td></tr></tbody>
             </table>
         </div>
     </main>
 
     <script>
-        const GOOGLE_SHEET_URL = "https://script.google.com/macros/s/AKfycbw9BFnG_IVCN9PIrn4S7csjiVEf3ZuBphdyUjDOGdlmoFieAnZPU5xNCKJNM9wo2UkP/exec"; 
+        const GOOGLE_SHEET_URL = "https://script.google.com/macros/s/AKfycbxdGPcw23_02YxGxOQyhMfompZxt_f-5BJW0ZYgRQ4LkuJjzDEsFu97EkYnk3BPOh_W/exec"; 
 
         async function loadProducts() {
             try {
-                // ดึงข้อมูลแบบไม่ติด Cache
                 const res = await fetch(`${GOOGLE_SHEET_URL}?t=${new Date().getTime()}`);
                 const data = await res.json();
                 const tbody = document.getElementById('stockBody');
-                
-                if (data.length === 0) {
-                    tbody.innerHTML = '<tr><td colspan="4" style="text-align:center;">ไม่มีข้อมูลสินค้าในขณะนี้</td></tr>';
-                    return;
-                }
-
                 tbody.innerHTML = data.map(p => `
                     <tr>
                         <td>
-                            <div style="display:flex; align-items:center;">
-                                <img src="${p.image_url ? p.image_url : 'https://via.placeholder.com/50'}" 
-                                     onerror="this.src='https://via.placeholder.com/50'"
-                                     style="width:50px; height:50px; object-fit:cover; border-radius:4px; margin-right:12px;">
-                                <div>
-                                    <div style="font-weight:600;">${p.name || '-'}</div>
-                                    <div style="font-size:11px; color:#666;">ID: ${p.id || '-'}</div>
-                                </div>
-                            </div>
+                            <img src="${p.image_url ? p.image_url.split(',')[0] : 'https://via.placeholder.com/50'}" style="width:50px; height:50px; object-fit:cover; border-radius:4px; margin-right:10px;">
+                            ${p.name || '-'}
                         </td>
                         <td>฿${Number(p.price || 0).toLocaleString()}</td>
-                        <td>${p.stock || 0} คู่</td>
-                        <td>
-                            <span class="status-tag" style="color: ${p.stock > 0 ? '#4CAF50' : '#FF5252'}">
-                                ${p.stock > 0 ? 'พร้อมขาย' : 'สินค้าหมด'}
-                            </span>
-                        </td>
+                        <td>${p.stock || 0}</td>
                     </tr>
                 `).join('');
             } catch (e) {
-                console.error(e);
-                document.getElementById('stockBody').innerHTML = '<tr><td colspan="4" style="color:red; text-align:center;">ไม่สามารถเชื่อมต่อกับฐานข้อมูลได้</td></tr>';
+                document.getElementById('stockBody').innerHTML = '<tr><td colspan="3" style="color:red;">โหลดไม่สำเร็จ เช็คการ Deploy ใน Script</td></tr>';
             }
         }
-
-        // โหลดข้อมูลเมื่อเปิดหน้าจอ
         loadProducts();
-        
-        // อัปเดตข้อมูลทุกๆ 30 วินาทีอัตโนมัติ
-        setInterval(loadProducts, 30000);
     </script>
 </body>
 </html>
