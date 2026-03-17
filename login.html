@@ -133,124 +133,45 @@
 </div>
 
 <script>
-/* ===== EmailJS Setup ===== */
-emailjs.init({
-  publicKey: "tf8DPZts5EhL3KHlb"
-});
+/* ===== สร้างไอดีแอดมินเริ่มต้นถ้ายังไม่มี ===== */
+if (!localStorage.getItem("users")) {
+    const initialUsers = [{
+        username: "admin",
+        password: "123", // แก้รหัสตรงนี้ได้ครับ
+        email: "admin@bsneakers.com",
+        role: "admin"
+    }];
+    localStorage.setItem("users", JSON.stringify(initialUsers));
+}
 
 /* ===== Login Logic ===== */
 function login(e){
-  e.preventDefault();
-  const username = document.getElementById("user").value.trim();
-  const password = document.getElementById("pass").value.trim();
-  const users = JSON.parse(localStorage.getItem("users")) || [];
-  const found = users.find(u => u.username === username && u.password === password);
-
-  if(found){
-    localStorage.setItem("currentUser", JSON.stringify({
-      username: found.username,
-      email: found.email,
-      avatar: found.avatar || "",
-      role: found.username.toLowerCase() === "admin" ? "admin" : "user" 
-    }));
+    e.preventDefault();
+    const username = document.getElementById("user").value.trim();
+    const password = document.getElementById("pass").value.trim();
+    const users = JSON.parse(localStorage.getItem("users")) || [];
     
-    Swal.fire({
-      icon: 'success',
-      title: 'เข้าสู่ระบบสำเร็จ',
-      text: found.username.toLowerCase() === "admin" ? 'เข้าสู่ระบบในฐานะแอดมิน' : 'ยินดีต้อนรับคุณ ' + username,
-      showConfirmButton: false,
-      timer: 1500,
-      background: '#1a1a1a',
-      color: '#fff'
-    }).then(() => {
-      window.location.href = "index.html";
-    });
-  } else {
-    Swal.fire({
-      icon: 'error',
-      title: 'ข้อมูลไม่ถูกต้อง',
-      text: 'กรุณาตรวจสอบชื่อผู้ใช้หรือรหัสผ่านอีกครั้ง',
-      confirmButtonColor: '#e60023',
-      background: '#1a1a1a',
-      color: '#fff'
-    });
-  }
-}
+    const found = users.find(u => u.username === username && u.password === password);
 
-/* ===== Password Reset System ===== */
-async function startReset(){
-  const { value: username } = await Swal.fire({
-    title: 'กู้คืนรหัสผ่าน',
-    input: 'text',
-    inputLabel: 'กรอกชื่อผู้ใช้ของคุณ',
-    confirmButtonColor: '#e60023',
-    showCancelButton: true,
-    background: '#1a1a1a',
-    color: '#fff'
-  });
-  
-  if(!username) return;
-  const users = JSON.parse(localStorage.getItem("users")) || [];
-  const found = users.find(u => u.username === username.trim());
-  
-  if(!found || !found.email){
-    Swal.fire({ icon: 'error', title: 'ไม่พบข้อมูล', text: 'ชื่อผู้ใช้นี้ไม่มีอยู่ในระบบ หรือไม่ได้ผูกอีเมลไว้', background: '#1a1a1a', color: '#fff' });
-    return;
-  }
-  
-  const otp = Math.floor(100000 + Math.random() * 900000).toString();
-  localStorage.setItem("resetUser", username);
-  localStorage.setItem("resetOTP", otp);
-  localStorage.setItem("resetExpire", (Date.now() + 5*60*1000).toString());
-
-  Swal.fire({ title: 'กำลังส่งรหัส OTP...', background: '#1a1a1a', color: '#fff', didOpen: () => Swal.showLoading() });
-
-  emailjs.send("service_j4ys8un", "template_hjwypf7", {
-    to_email: found.email,
-    otp_code: otp,
-    shop_name: "B.Sneakers"
-  })
-  .then(()=>{
-    Swal.fire({ icon: 'success', title: 'ส่งรหัสแล้ว', text: 'กรุณาเช็คอีเมล ' + found.email, background: '#1a1a1a', color: '#fff' }).then(verifyOTP);
-  })
-  .catch(()=> Swal.fire({ icon: 'error', title: 'ผิดพลาด', text: 'ไม่สามารถส่งอีเมลได้ในขณะนี้', background: '#1a1a1a', color: '#fff' }));
-}
-
-function verifyOTP(){
-  Swal.fire({
-    title: 'ยืนยัน OTP',
-    input: 'text',
-    confirmButtonColor: '#e60023',
-    showCancelButton: true,
-    background: '#1a1a1a',
-    color: '#fff'
-  }).then((result) => {
-    if (result.isConfirmed) {
-      if(result.value === localStorage.getItem("resetOTP")){
-        setNewPassword();
-      } else {
-        Swal.fire({ icon: 'error', title: 'รหัสไม่ถูกต้อง', background: '#1a1a1a', color: '#fff' });
-      }
+    if(found){
+        localStorage.setItem("currentUser", JSON.stringify({
+            username: found.username,
+            email: found.email,
+            role: found.username.toLowerCase() === "admin" ? "admin" : "user" 
+        }));
+        
+        Swal.fire({
+            icon: 'success',
+            title: 'เข้าสู่ระบบสำเร็จ',
+            text: 'ยินดีต้อนรับ ' + username,
+            timer: 1500,
+            showConfirmButton: false
+        }).then(() => {
+            window.location.href = "index.html";
+        });
+    } else {
+        Swal.fire({ icon: 'error', title: 'ชื่อผู้ใช้หรือรหัสผ่านผิด' });
     }
-  });
-}
-
-function setNewPassword(){
-  Swal.fire({
-    title: 'ตั้งรหัสผ่านใหม่',
-    input: 'password',
-    confirmButtonColor: '#e60023',
-    background: '#1a1a1a',
-    color: '#fff'
-  }).then((result) => {
-    if (result.isConfirmed && result.value.length >= 4) {
-      let users = JSON.parse(localStorage.getItem("users")) || [];
-      const username = localStorage.getItem("resetUser");
-      users = users.map(u => u.username === username ? { ...u, password: result.value } : u);
-      localStorage.setItem("users", JSON.stringify(users));
-      Swal.fire({ icon: 'success', title: 'สำเร็จ', text: 'เปลี่ยนรหัสผ่านแล้ว เข้าสู่ระบบได้เลย', background: '#1a1a1a', color: '#fff' });
-    }
-  });
 }
 </script>
 </body>
