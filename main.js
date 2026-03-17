@@ -1,4 +1,4 @@
-const API_URL = "https://script.google.com/macros/s/AKfycbxdGPcw23_02YxGxOQyhMfompZxt_f-5BJW0ZYgRQ4LkuJjzDEsFu97EkYnk3BPOh_W/exec";
+const API_URL = "https://script.google.com/macros/s/AKfycbyNrYbGnEsbklqG5kdHiCWXsdqTfhSyQZQnKSe-ztAAIMIPOzahb7f5If7-VXgekFx7/exec";
 
 async function renderProducts() {
     const grid = document.getElementById("productGrid");
