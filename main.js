@@ -1,5 +1,6 @@
 const API_URL = "https://script.google.com/macros/s/AKfycbyNrYbGnEsbklqG5kdHiCWXsdqTfhSyQZQnKSe-ztAAIMIPOzahb7f5If7-VXgekFx7/exec";
 
+// ฟังก์ชันดึงสินค้ามาแสดง
 async function renderProducts() {
     const grid = document.getElementById("productGrid");
     if (!grid) return;
@@ -14,10 +15,7 @@ async function renderProducts() {
         }
 
         grid.innerHTML = products.map(p => {
-            // จัดการรูปภาพ (ถ้าไม่มีรูปให้ใช้รูปว่าง)
             const displayImg = p.image_url ? p.image_url.split(',')[0].trim() : '';
-            
-            // จัดการราคาให้มีคอมม่า (เช่น 4,500)
             const cleanPrice = p.price ? String(p.price).replace(/[^0-9.]/g, '') : '0';
             const formattedPrice = Number(cleanPrice).toLocaleString();
 
@@ -39,12 +37,36 @@ async function renderProducts() {
                 </div>
             </div>`;
         }).join('');
-
     } catch (error) {
         console.error("Error:", error);
-        grid.innerHTML = '<p style="text-align:center; padding:20px; color:red;">ไม่สามารถโหลดสินค้าได้ในขณะนี้</p>';
+        grid.innerHTML = '<p style="text-align:center; padding:20px; color:red;">ไม่สามารถโหลดสินค้าได้ (ตรวจสอบการเชื่อมต่อ API)</p>';
     }
 }
 
-// สั่งให้ทำงานทันทีที่โหลดหน้าเว็บ
+// ฟังก์ชันเช็คสถานะล็อกอินและแสดงปุ่ม Admin
+function checkAuth() {
+    const user = JSON.parse(localStorage.getItem("currentUser"));
+    const adminFab = document.getElementById('adminFab');
+    const loginLink = document.getElementById('loginLink');
+    const userDisplay = document.getElementById('userDisplay');
+    const logoutBtn = document.getElementById('logoutBtn');
+
+    if (user) {
+        if (loginLink) loginLink.style.display = 'none';
+        if (userDisplay) {
+            userDisplay.style.display = 'flex';
+            document.getElementById('userNameText').innerText = user.username;
+        }
+        if (logoutBtn) logoutBtn.style.display = 'flex';
+        if (adminFab && user.role === 'admin') adminFab.style.display = 'flex';
+    }
+}
+
+function handleLogout() {
+    localStorage.removeItem("currentUser");
+    location.reload();
+}
+
+// เรียกใช้งาน
 renderProducts();
+checkAuth();
