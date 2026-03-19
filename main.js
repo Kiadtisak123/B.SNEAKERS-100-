@@ -7,10 +7,12 @@ async function renderProducts() {
     if (!grid) return;
 
     try {
-        // ดึงข้อมูลสดใหม่โดยไม่ใช้ Cache
+        // ดึงข้อมูลสดใหม่โดยไม่ใช้ Cache ด้วยการต่อท้ายเวลาปัจจุบัน
         const response = await fetch(`${API_URL}?t=${new Date().getTime()}`);
         const products = await response.json();
         
+        console.log("Data loaded:", products); // ดูข้อมูลใน F12
+
         if (!products || products.length === 0) {
             grid.innerHTML = '<p style="text-align:center; padding:40px; width:100%;">ไม่พบข้อมูลสินค้าในระบบ</p>';
             return;
@@ -20,7 +22,7 @@ async function renderProducts() {
             // ดึงรูปภาพ (ถ้ามีหลายรูปให้เอาตัวแรก)
             const displayImg = p.image_url ? p.image_url.split(',')[0].trim() : 'https://via.placeholder.com/400?text=No+Image';
             
-            // ฟอร์แมตราคา
+            // ฟอร์แมตราคาให้มีคอมม่า
             const rawPrice = String(p.price || '0').replace(/[^0-9.]/g, '');
             const formattedPrice = Number(rawPrice).toLocaleString();
 
@@ -51,16 +53,16 @@ async function renderProducts() {
 // 3. ฟังก์ชันเช็คสิทธิ์แอดมิน (เรียกปุ่มบวกสีแดงกลับมา)
 function checkAuth() {
     const user = JSON.parse(localStorage.getItem("currentUser"));
-    const adminFab = document.getElementById('adminFab'); // ปุ่มบวก
+    const adminFab = document.getElementById('adminFab'); // ปุ่มบวกสีแดง
     const loginLink = document.getElementById('loginLink');
     const userDisplay = document.getElementById('userDisplay');
     const logoutBtn = document.getElementById('logoutBtn');
 
     if (user) {
-        // ซ่อนปุ่ม "เข้าสู่ระบบ"
+        // ซ่อนปุ่ม "เข้าสู่ระบบ" เดิม
         if (loginLink) loginLink.style.display = 'none';
         
-        // แสดงชื่อผู้ใช้
+        // แสดงชื่อผู้ใช้ที่ล็อกอิน
         if (userDisplay) {
             userDisplay.style.display = 'flex';
             const nameText = document.getElementById('userNameText');
@@ -70,7 +72,7 @@ function checkAuth() {
         // แสดงปุ่ม Logout
         if (logoutBtn) logoutBtn.style.display = 'flex';
         
-        // --- ส่วนสำคัญ: ถ้าเป็นแอดมิน ให้แสดงปุ่มบวก ---
+        // --- ส่วนสำคัญ: ถ้าเป็นแอดมิน ให้แสดงปุ่มบวกสีแดง ---
         if (adminFab && user.role === 'admin') {
             adminFab.style.display = 'flex';
         }
