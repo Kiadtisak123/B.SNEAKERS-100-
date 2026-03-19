@@ -1,5 +1,5 @@
-// 1. วาง URL ใหม่ที่คุณเพิ่งได้มาตรงนี้
-const API_URL = "https://script.google.com/macros/s/AKfycbw07BKvP6A1uBA2HOx46RGxppbGQBrIr-qNnDrtEdqF2o0LC2rM_biPBjlp9WrxptQw/exec";
+// 1. ใช้ลิงก์ล่าสุดที่เชื่อมกับ Apps Script ตัวใหม่ของคุณ
+const API_URL = "https://script.google.com/macros/s/AKfycbzkEtsrDDM2-jOz5DDTd7ObyFDH3VEepUaKF6oegTCq1K8sZpbRpnRKJibRLZ8y6b-T/exec";
 
 // 2. ฟังก์ชันดึงสินค้า (เพิ่มระบบป้องกัน Cache เพื่อให้สินค้าใหม่ขึ้นทันที)
 async function renderProducts() {
@@ -7,20 +7,20 @@ async function renderProducts() {
     if (!grid) return;
 
     try {
-        // เพิ่ม ?t=... เพื่อให้บราวเซอร์โหลดข้อมูลสดใหม่เสมอ ไม่จำค่าเก่า
+        // เพิ่ม ?t=... เพื่อให้บราวเซอร์ดึงข้อมูลใหม่จาก Google Sheets ทุกครั้งที่เปิดหน้าเว็บ
         const response = await fetch(`${API_URL}?t=${new Date().getTime()}`);
         const products = await response.json();
         
         if (!products || products.length === 0) {
-            grid.innerHTML = '<p style="text-align:center; padding:20px; width:100%;">ไม่พบข้อมูลสินค้าในระบบ</p>';
+            grid.innerHTML = '<p style="text-align:center; padding:40px; width:100%;">ไม่พบข้อมูลสินค้า (ลองเพิ่มสินค้าใน AppSheet)</p>';
             return;
         }
 
         grid.innerHTML = products.map(p => {
-            // จัดการเรื่องรูปภาพ (ใช้รูปแรกถ้ามีหลายรูป)
+            // ดึงรูปภาพแรกมาแสดง
             const displayImg = p.image_url ? p.image_url.split(',')[0].trim() : 'https://via.placeholder.com/400?text=No+Image';
             
-            // จัดการเรื่องราคา
+            // จัดการเรื่องราคา (ลบตัวอักษรที่ไม่ใช่ตัวเลขออก)
             const rawPrice = String(p.price || '0').replace(/[^0-9.]/g, '');
             const formattedPrice = Number(rawPrice).toLocaleString();
 
