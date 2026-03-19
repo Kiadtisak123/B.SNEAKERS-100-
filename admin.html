@@ -19,7 +19,8 @@
         .card { background: var(--card-bg); border: 1px solid var(--border); border-radius: 12px; margin-top: 20px; overflow: hidden; }
         table { width: 100%; border-collapse: collapse; }
         th, td { padding: 15px; border-bottom: 1px solid var(--border); text-align: left; vertical-align: middle; }
-        .btn-appsheet { background: #2196F3; color: white; padding: 10px 20px; border: none; border-radius: 6px; cursor: pointer; text-decoration: none; display: inline-block; margin-bottom: 20px; }
+        .btn-appsheet { background: #2196F3; color: white; padding: 10px 20px; border: none; border-radius: 6px; cursor: pointer; text-decoration: none; display: inline-block; margin-bottom: 20px; transition: 0.3s; }
+        .btn-appsheet:hover { background: #1976D2; transform: translateY(-2px); }
     </style>
 </head>
 <body>
@@ -30,7 +31,7 @@
     </aside>
     <main>
         <h1>จัดการสต็อกสินค้า</h1>
-        <a href="https://www.appsheet.com/start/f5866160-7c2a-436e-9382-7f2864696111" target="_blank" class="btn-appsheet">
+        <a href="https://www.appsheet.com/start/2e307576-b652-4cb3-b92a-0bd98038f77a" target="_blank" class="btn-appsheet">
             <i class="fas fa-external-link-alt"></i> เปิด AppSheet เพื่อเพิ่ม/แก้ไขสินค้า
         </a>
         <div class="card">
@@ -42,7 +43,8 @@
     </main>
 
     <script>
-    const GOOGLE_SHEET_URL = "https://script.google.com/macros/s/AKfycbyNrYbGnEsbklqG5kdHiCWXsdqTfhSyQZQnKSe-ztAAIMIPOzahb7f5If7-VXgekFx7/exec";
+    // แก้ไขลิงก์ Apps Script ตัวใหม่ล่าสุดที่เชื่อมกับชีท "products"
+    const GOOGLE_SHEET_URL = "https://script.google.com/macros/s/AKfycbxgV7RVwyXcMB6lHb6vTv-wGwoiz9guy_g5e38kGj3AUIil1s1snlsWbnx9yrFJd_p3ZQ/exec";
 
     async function loadProducts() {
         try {
@@ -50,22 +52,40 @@
             const data = await res.json();
             const tbody = document.getElementById('stockBody');
             
-            tbody.innerHTML = data.map(p => `
-                <tr>
-                    <td>
-                        <div style="display:flex; align-items:center; gap:10px;">
-                            <img src="${p.image_url ? p.image_url.split(',')[0] : 'https://via.placeholder.com/50'}" 
-                                 onerror="this.src='https://via.placeholder.com/50'"
-                                 style="width:50px; height:50px; object-fit:cover; border-radius:4px;">
-                            ${p.name || '-'}
-                        </div>
-                    </td>
-                    <td>฿${Number(String(p.price).replace(/[^0-9.]/g, '') || 0).toLocaleString()}</td>
-                    <td>${p.stock || 0}</td>
-                </tr>
-            `).join('');
+            if (!data || data.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="3" style="text-align:center;">ไม่พบข้อมูลสินค้าใน Google Sheets</td></tr>';
+                return;
+            }
+
+            tbody.innerHTML = data.map(p => {
+                const img = p.image_url ? p.image_url.split(',')[0].trim() : 'https://via.placeholder.com/50';
+                const price = Number(String(p.price || '0').replace(/[^0-9.]/g, '')).toLocaleString();
+                
+                return `
+                    <tr>
+                        <td>
+                            <div style="display:flex; align-items:center; gap:10px;">
+                                <img src="${img}" 
+                                     onerror="this.src='https://via.placeholder.com/50'"
+                                     style="width:50px; height:50px; object-fit:cover; border-radius:4px; background:#222;">
+                                <div>
+                                    <div style="font-weight:600;">${p.name || '-'}</div>
+                                    <div style="font-size:11px; color:#888;">ID: ${p.id || '-'}</div>
+                                </div>
+                            </div>
+                        </td>
+                        <td style="color:#e60023; font-weight:600;">฿${price}</td>
+                        <td>
+                            <span style="background:${p.stock > 0 ? '#2e7d32' : '#c62828'}; padding:4px 8px; border-radius:4px; font-size:12px;">
+                                ${p.stock || 0} คู่
+                            </span>
+                        </td>
+                    </tr>
+                `;
+            }).join('');
         } catch (e) {
-            document.getElementById('stockBody').innerHTML = '<tr><td colspan="3" style="color:red; text-align:center;">โหลดข้อมูลสต็อกไม่สำเร็จ</td></tr>';
+            console.error(e);
+            document.getElementById('stockBody').innerHTML = '<tr><td colspan="3" style="color:red; text-align:center;">❌ โหลดข้อมูลสต็อกไม่สำเร็จ (โปรดเช็คสิทธิ์ API)</td></tr>';
         }
     }
     loadProducts();
