@@ -1,33 +1,40 @@
-// 1. ลิงก์ API ล่าสุดของคุณ
+// 1. ลิงก์ API ล่าสุดที่เชื่อมกับ Google Sheets ของคุณแล้ว
 const API_URL = "https://script.google.com/macros/s/AKfycbxgV7RVwyXcMB6lHb6vTv-wGwoiz9guy_g5e38kGj3AUIil1s1snlsWbnx9yrFJd_p3ZQ/exec";
 
-// 2. ฟังก์ชันดึงสินค้า
+// 2. ฟังก์ชันดึงสินค้ามาแสดง (รองรับสินค้าใหม่ GG และเทสระบบ)
 async function renderProducts() {
     const grid = document.getElementById("productGrid");
     if (!grid) return;
 
     try {
+        // ดึงข้อมูลสดใหม่โดยไม่ใช้ Cache
         const response = await fetch(`${API_URL}?t=${new Date().getTime()}`);
         const products = await response.json();
         
         if (!products || products.length === 0) {
-            grid.innerHTML = '<p style="text-align:center; padding:40px; width:100%;">ไม่พบข้อมูลสินค้า</p>';
+            grid.innerHTML = '<p style="text-align:center; padding:40px; width:100%;">ไม่พบข้อมูลสินค้าในระบบ</p>';
             return;
         }
 
         grid.innerHTML = products.map(p => {
+            // ดึงรูปภาพ (ถ้ามีหลายรูปให้เอาตัวแรก)
             const displayImg = p.image_url ? p.image_url.split(',')[0].trim() : 'https://via.placeholder.com/400?text=No+Image';
-            const formattedPrice = Number(String(p.price || '0').replace(/[^0-9.]/g, '')).toLocaleString();
+            
+            // ฟอร์แมตราคา
+            const rawPrice = String(p.price || '0').replace(/[^0-9.]/g, '');
+            const formattedPrice = Number(rawPrice).toLocaleString();
 
             return `
             <div class="card">
                 <div style="position:relative; width:100%; padding-top:100%; background:#222;">
-                    <img src="${displayImg}" alt="${p.name}" onerror="this.src='https://via.placeholder.com/400?text=Image+Error'"
+                    <img src="${displayImg}" 
+                         alt="${p.name}" 
+                         onerror="this.src='https://via.placeholder.com/400?text=Image+Error'"
                          style="position:absolute; top:0; left:0; width:100%; height:100%; object-fit:cover;">
                 </div>
                 <div class="card-body">
-                    <h3 style="font-size:18px; margin-bottom:10px;">${p.name || 'ไม่มีชื่อสินค้า'}</h3>
-                    <div style="display:flex; justify-content:space-between; color:#888; font-size:12px; margin-bottom:10px;">
+                    <h3 style="margin-bottom:10px; font-size:18px;">${p.name || 'ไม่มีชื่อสินค้า'}</h3>
+                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px; color:#888; font-size:12px;">
                         <span>Size: ${p.sizes || '-'}</span>
                         <span>Stock: ${p.stock || 0}</span>
                     </div>
@@ -36,28 +43,34 @@ async function renderProducts() {
             </div>`;
         }).join('');
     } catch (error) {
-        grid.innerHTML = '<p style="text-align:center; padding:20px; color:red; width:100%;">โหลดข้อมูลไม่สำเร็จ</p>';
+        console.error("Error:", error);
+        grid.innerHTML = '<p style="text-align:center; padding:20px; color:red; width:100%;">❌ โหลดข้อมูลล้มเหลว (ตรวจสอบ API)</p>';
     }
 }
 
-// 3. ฟังก์ชันเช็คสถานะการล็อกอิน (เพื่อให้ปุ่มแอดมินแสดงผล)
+// 3. ฟังก์ชันเช็คสิทธิ์แอดมิน (เรียกปุ่มบวกสีแดงกลับมา)
 function checkAuth() {
     const user = JSON.parse(localStorage.getItem("currentUser"));
-    const adminFab = document.getElementById('adminFab'); // ปุ่มแอดมิน (ปุ่มบวก)
+    const adminFab = document.getElementById('adminFab'); // ปุ่มบวก
     const loginLink = document.getElementById('loginLink');
     const userDisplay = document.getElementById('userDisplay');
     const logoutBtn = document.getElementById('logoutBtn');
 
     if (user) {
+        // ซ่อนปุ่ม "เข้าสู่ระบบ"
         if (loginLink) loginLink.style.display = 'none';
+        
+        // แสดงชื่อผู้ใช้
         if (userDisplay) {
             userDisplay.style.display = 'flex';
             const nameText = document.getElementById('userNameText');
             if (nameText) nameText.innerText = user.username;
         }
+        
+        // แสดงปุ่ม Logout
         if (logoutBtn) logoutBtn.style.display = 'flex';
         
-        // ถ้าเป็น admin ให้แสดงปุ่ม FAB (ปุ่มบวกสีแดง)
+        // --- ส่วนสำคัญ: ถ้าเป็นแอดมิน ให้แสดงปุ่มบวก ---
         if (adminFab && user.role === 'admin') {
             adminFab.style.display = 'flex';
         }
@@ -70,7 +83,7 @@ function handleLogout() {
     location.reload();
 }
 
-// 4. เรียกใช้งานทั้งหมดเมื่อหน้าเว็บโหลดเสร็จ
+// 4. เริ่มทำงานเมื่อหน้าเว็บพร้อม
 document.addEventListener("DOMContentLoaded", () => {
     renderProducts();
     checkAuth();
