@@ -1,13 +1,13 @@
-// 1. ลิงก์ API ที่คุณเพิ่ง Deploy สำเร็จล่าสุด
+// 1. ลิงก์ API ล่าสุดที่เชื่อมกับไฟล์ B-Sneakers-API แล้ว
 const API_URL = "https://script.google.com/macros/s/AKfycbxgV7RVwyXcMB6lHb6vTv-wGwoiz9guy_g5e38kGj3AUIil1s1snlsWbnx9yrFJd_p3ZQ/exec";
 
-// 2. ฟังก์ชันดึงสินค้า (จะดึงจากไฟล์ B-Sneakers-API)
+// 2. ฟังก์ชันดึงสินค้า (ดึงข้อมูล "สวัสดี" และสินค้าอื่นๆ จาก Google Sheets)
 async function renderProducts() {
     const grid = document.getElementById("productGrid");
     if (!grid) return;
 
     try {
-        // ดึงข้อมูลสดใหม่เสมอโดยไม่ติด Cache
+        // เพิ่ม t=... เพื่อป้องกันบราวเซอร์จำค่าเก่า (Force Refresh)
         const response = await fetch(`${API_URL}?t=${new Date().getTime()}`);
         const products = await response.json();
         
@@ -17,6 +17,7 @@ async function renderProducts() {
         }
 
         grid.innerHTML = products.map(p => {
+            // จัดการรูปภาพ ถ้าไม่มีให้ใช้ Placeholder
             const displayImg = p.image_url ? p.image_url.split(',')[0].trim() : 'https://via.placeholder.com/400?text=No+Image';
             const formattedPrice = Number(String(p.price || '0').replace(/[^0-9.]/g, '')).toLocaleString();
 
@@ -65,12 +66,13 @@ function checkAuth() {
     }
 }
 
+// ฟังก์ชันออกจากระบบ
 function handleLogout() {
     localStorage.removeItem("currentUser");
     location.reload();
 }
 
-// เริ่มทำงาน
+// เริ่มทำงานเมื่อโหลดหน้าเว็บ
 document.addEventListener("DOMContentLoaded", () => {
     renderProducts();
     checkAuth();
