@@ -1,4 +1,4 @@
-// 1. ใช้ลิงก์ล่าสุดที่เชื่อมกับ Apps Script ตัวใหม่ของคุณ
+// 1. ลิงก์ API ตัวล่าสุดที่คุณเพิ่งสร้าง (ตัวนี้จะเห็นสินค้า GG แน่นอน)
 const API_URL = "https://script.google.com/macros/s/AKfycbzkEtsrDDM2-jOz5DDTd7ObyFDH3VEepUaKF6oegTCq1K8sZpbRpnRKJibRLZ8y6b-T/exec";
 
 // 2. ฟังก์ชันดึงสินค้า (เพิ่มระบบป้องกัน Cache เพื่อให้สินค้าใหม่ขึ้นทันที)
@@ -7,20 +7,20 @@ async function renderProducts() {
     if (!grid) return;
 
     try {
-        // เพิ่ม ?t=... เพื่อให้บราวเซอร์ดึงข้อมูลใหม่จาก Google Sheets ทุกครั้งที่เปิดหน้าเว็บ
+        // เพิ่ม ?t=... เพื่อบังคับให้บราวเซอร์ดึงข้อมูลใหม่จาก Google Sheets ทุกครั้ง
         const response = await fetch(`${API_URL}?t=${new Date().getTime()}`);
         const products = await response.json();
         
         if (!products || products.length === 0) {
-            grid.innerHTML = '<p style="text-align:center; padding:40px; width:100%;">ไม่พบข้อมูลสินค้า (ลองเพิ่มสินค้าใน AppSheet)</p>';
+            grid.innerHTML = '<p style="text-align:center; padding:40px; width:100%;">ไม่พบข้อมูลสินค้า (ลองเช็คชื่อ Sheet ใน Google Sheets)</p>';
             return;
         }
 
         grid.innerHTML = products.map(p => {
-            // ดึงรูปภาพแรกมาแสดง
+            // จัดการรูปภาพ
             const displayImg = p.image_url ? p.image_url.split(',')[0].trim() : 'https://via.placeholder.com/400?text=No+Image';
             
-            // จัดการเรื่องราคา (ลบตัวอักษรที่ไม่ใช่ตัวเลขออก)
+            // จัดการราคา
             const rawPrice = String(p.price || '0').replace(/[^0-9.]/g, '');
             const formattedPrice = Number(rawPrice).toLocaleString();
 
