@@ -1,80 +1,38 @@
-// 1. ลิงก์ API ตัวล่าสุดที่คุณเพิ่งสร้าง (ตัวนี้จะเห็นสินค้า GG แน่นอน)
 const API_URL = "https://script.google.com/macros/s/AKfycbzkEtsrDDM2-jOz5DDTd7ObyFDH3VEepUaKF6oegTCq1K8sZpbRpnRKJibRLZ8y6b-T/exec";
 
-// 2. ฟังก์ชันดึงสินค้า (เพิ่มระบบป้องกัน Cache เพื่อให้สินค้าใหม่ขึ้นทันที)
 async function renderProducts() {
     const grid = document.getElementById("productGrid");
     if (!grid) return;
 
     try {
-        // เพิ่ม ?t=... เพื่อบังคับให้บราวเซอร์ดึงข้อมูลใหม่จาก Google Sheets ทุกครั้ง
-        const response = await fetch(`${API_URL}?t=${new Date().getTime()}`);
+        // เติม ?nocache= เพื่อไม่ให้บราวเซอร์ดึงหน้าเก่ามาแสดง
+        const response = await fetch(`${API_URL}?nocache=${new Date().getTime()}`);
         const products = await response.json();
         
+        console.log("Data from Sheets:", products); // เช็คใน Inspect (F12) ว่าข้อมูลมาไหม
+
         if (!products || products.length === 0) {
-            grid.innerHTML = '<p style="text-align:center; padding:40px; width:100%;">ไม่พบข้อมูลสินค้า (ลองเช็คชื่อ Sheet ใน Google Sheets)</p>';
+            grid.innerHTML = '<div style="grid-column: 1/-1; text-align:center; padding:50px;"><h2>⚠️ ไม่พบสินค้าในฐานข้อมูล</h2><p>ตรวจสอบชื่อ Sheet ใน Google Sheets ว่าชื่อ "products" หรือไม่</p></div>';
             return;
         }
 
         grid.innerHTML = products.map(p => {
-            // จัดการรูปภาพ
             const displayImg = p.image_url ? p.image_url.split(',')[0].trim() : 'https://via.placeholder.com/400?text=No+Image';
-            
-            // จัดการราคา
-            const rawPrice = String(p.price || '0').replace(/[^0-9.]/g, '');
-            const formattedPrice = Number(rawPrice).toLocaleString();
-
             return `
             <div class="card">
-                <div class="card-img-container" style="position:relative; width:100%; padding-top:100%; background:#222;">
-                    <img src="${displayImg}" 
-                         alt="${p.name}" 
-                         onerror="this.src='https://via.placeholder.com/400?text=Image+Error'"
-                         style="position:absolute; top:0; left:0; width:100%; height:100%; object-fit:cover;">
+                <div style="position:relative; width:100%; padding-top:100%; background:#222;">
+                    <img src="${displayImg}" style="position:absolute; top:0; left:0; width:100%; height:100%; object-fit:cover;">
                 </div>
                 <div class="card-body">
-                    <h3 style="margin-bottom:10px; font-size:18px;">${p.name || 'ไม่มีชื่อสินค้า'}</h3>
-                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px; color:#888; font-size:12px;">
-                        <span>Size: ${p.sizes || '-'}</span>
-                        <span>Stock: ${p.stock || 0}</span>
-                    </div>
-                    <div class="price" style="color:#e60023; font-size:22px; font-weight:bold;">฿${formattedPrice}</div>
+                    <h3 style="font-size:18px;">${p.name || 'ไม่มีชื่อ'}</h3>
+                    <p style="color:#888;">Stock: ${p.stock || 0}</p>
+                    <div class="price" style="color:#e60023; font-size:22px; font-weight:bold;">฿${Number(p.price).toLocaleString()}</div>
                 </div>
             </div>`;
         }).join('');
     } catch (error) {
-        console.error("Error fetching products:", error);
-        grid.innerHTML = '<p style="text-align:center; padding:20px; color:red; width:100%;">โหลดข้อมูลไม่สำเร็จ (ตรวจสอบการตั้งค่า API)</p>';
+        grid.innerHTML = '<p style="text-align:center; color:red; width:100%;">❌ เชื่อมต่อ Google Sheets ไม่สำเร็จ</p>';
     }
 }
 
-// 3. ฟังก์ชันเช็คสถานะการล็อกอิน
-function checkAuth() {
-    const user = JSON.parse(localStorage.getItem("currentUser"));
-    const adminFab = document.getElementById('adminFab');
-    const loginLink = document.getElementById('loginLink');
-    const userDisplay = document.getElementById('userDisplay');
-    const logoutBtn = document.getElementById('logoutBtn');
-
-    if (user) {
-        if (loginLink) loginLink.style.display = 'none';
-        if (userDisplay) {
-            userDisplay.style.display = 'flex';
-            document.getElementById('userNameText').innerText = user.username;
-        }
-        if (logoutBtn) logoutBtn.style.display = 'flex';
-        // แสดงปุ่มแอดมินถ้าเป็น admin
-        if (adminFab && user.role === 'admin') adminFab.style.display = 'flex';
-    }
-}
-
-function handleLogout() {
-    localStorage.removeItem("currentUser");
-    location.reload();
-}
-
-// เรียกใช้งานเมื่อหน้าเว็บโหลดเสร็จ
-document.addEventListener("DOMContentLoaded", () => {
-    renderProducts();
-    checkAuth();
-});
+document.addEventListener("DOMContentLoaded", renderProducts);
